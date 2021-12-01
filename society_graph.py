@@ -29,7 +29,7 @@ class Society_Graph:
             raise ValueError("Invalid size of functions list.")
         for i, fun in enumerate(functions_list):
             self.set_function(i, fun)
-    def set_function(self, i, fun):
+    def set_function(self, i : int, fun : function):
         self.graph[i][UPDATE_FUNCTION] = fun
 
     def set_beliefs(self, belief_list : list):
@@ -37,9 +37,7 @@ class Society_Graph:
             raise ValueError("Invalid size of belief list.")
         for i, val in enumerate(belief_list):
             self.set_belief(i, val)
-    def set_belief(self, i, val):
-        if not val is float:
-            raise ValueError("Invalid belief value.")
+    def set_belief(self, i : int, val : float):
         if val > 1 or val < 0:
             raise ValueError("Invalid belief value.")
         self.graph[i][BELIEF_VALUE] = val
@@ -53,9 +51,7 @@ class Society_Graph:
         for i in range(influence_matrix.shape[0]):
             for j in range(influence_matrix.shape[1]):
                 self.set_influence(i,j,influence_matrix[i][j])
-    def set_influence(self, i, j, val):
-        if not val is int:
-            raise ValueError("Invalid influence value.")
+    def set_influence(self, i : int, j : int, val : float):
         if val < 0 or val > 1:
             raise ValueError("Invalid influence value.")
         self.graph[i][j][INFLUENCE_VALUE] = val
@@ -65,20 +61,20 @@ class Society_Graph:
             raise ValueError("Invalid size of tolerance list.")
         for i, val in enumerate(tolerance_list):
             self.set_tolerance(i, val)
-    def set_tolerance(self, i, val):
+    def set_tolerance(self, i : int, val : float):
         if not val is int:
             raise ValueError("Invalid tolerance value.")
         if val < -1 or val > 1:
             raise ValueError("Invalid tolerance value.")
         self.graph[i][TOLERANCE_VALUE] = val
     
-    def apply_function(self, nbr, n):
+    def apply_function(self, nbr : int, n : int):
         func = self.graph[n][UPDATE_FUNCTION]
         diff = self.graph[nbr][BELIEF_VALUE] - self.graph[n][BELIEF_VALUE]
         tol = self.graph[nbr][TOLERANCE_VALUE]
         return func(diff,tol)
         
-    def set_inside_interval(self, n):
+    def set_between_0_1(self, n : int):
         self.graph[n][BELIEF_VALUE] = max(0,self.graph[n][BELIEF_VALUE])
         self.graph[n][BELIEF_VALUE] = min(1,self.graph[n][BELIEF_VALUE])
     
@@ -88,4 +84,4 @@ class Society_Graph:
             for nbr in self.graph.predecessors():
                 sum += self.apply_function(nbr,n)*self.graph[nbr][n][INFLUENCE_VALUE]
             self.graph[n][BELIEF_VALUE] += sum/self.graph.in_degree(n)
-            self.set_inside_interval(n)
+            self.set_between_0_1(n)
