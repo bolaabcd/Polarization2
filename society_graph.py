@@ -86,7 +86,10 @@ class Society_Graph:
         self.graph[n][BELIEF_VALUE] = max(0,self.graph[n][BELIEF_VALUE])
         self.graph[n][BELIEF_VALUE] = min(1,self.graph[n][BELIEF_VALUE])
     
-    def update(self):
+    def get_beliefs(self):
+        return [self.graph[n][BELIEF_VALUE] for n in self.graph]
+
+    def update_beliefs(self):
         for n in self.graph:
             sum = 0
             for nbr in self.graph.predecessors():
