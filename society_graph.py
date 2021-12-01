@@ -15,12 +15,22 @@ class Society_Graph:
         initial_belief : list,
         initial_influence : np.ndarray,
         initial_tolerance : list,
+        initial_functions : list
         ):
         self.num_agents = num_agents
         self.graph = nx.DiGraph()
         self.set_beliefs(initial_belief)
         self.set_influences(initial_influence)
         self.set_tolerances(initial_tolerance)
+        self.set_functions(initial_functions)
+
+    def set_functions(self,functions_list : list):
+        if self.num_agents != len(functions_list):
+            raise ValueError("Invalid size of functions list.")
+        for i, fun in enumerate(functions_list):
+            self.set_function(i, fun)
+    def set_function(self, i, fun):
+        self.graph[i][UPDATE_FUNCTION] = fun
 
     def set_beliefs(self, belief_list : list):
         if self.num_agents != len(belief_list):
