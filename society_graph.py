@@ -22,14 +22,20 @@ class Society_Graph:
         self.set_influences(initial_influence)
         self.set_tolerances(initial_tolerance)
 
-
     def set_beliefs(self, belief_list : list):
+        if self.num_agents != len(belief_list):
+            raise ValueError("Invalid size of belief list.")
         for i, val in enumerate(belief_list):
             self.set_belief(i, val)
     def set_belief(self, i, val):
         self.graph[i][BELIEF_VALUE] = val
     
     def set_influences(self, influence_matrix: np.ndarray):
+        if self.num_agents != influence_matrix.shape[0]:
+            raise ValueError("Invalid size of influence matrix.")
+        if self.num_agents != influence_matrix.shape[1]:
+            raise ValueError("Invalid size of influence matrix.")
+        
         for i in range(influence_matrix.shape[0]):
             for j in range(influence_matrix.shape[1]):
                 self.set_influence(i,j,influence_matrix[i][j])
@@ -37,6 +43,8 @@ class Society_Graph:
         self.graph[i][j][INFLUENCE_VALUE] = val
     
     def set_tolerances(self, tolerance_list : list):
+        if self.num_agents != len(tolerance_list):
+            raise ValueError("Invalid size of tolerance list.")
         for i, val in enumerate(tolerance_list):
             self.set_tolerance(i, val)
     def set_tolerance(self, i, val):
@@ -55,7 +63,7 @@ class Society_Graph:
     def update(self):
         for n in self.graph:
             sum = 0
-            for nbr,blf in self.graph.pred[n].data(BELIEF_VALUE):
+            for nbr in self.graph.predecessors():
                 sum += self.apply_function(nbr,n)*self.graph[nbr][n][INFLUENCE_VALUE]
             self.graph[n][BELIEF_VALUE] += sum/self.graph.in_degree(n)
             self.set_inside_interval(n)
