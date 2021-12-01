@@ -1,3 +1,4 @@
+from networkx.exception import NetworkXError
 import numpy as np
 import networkx as nx
 
@@ -55,7 +56,13 @@ class Society_Graph:
     def set_influence(self, i : int, j : int, val : float):
         if val < 0 or val > 1:
             raise ValueError("Invalid influence value.")
-        self.graph[i][j][INFLUENCE_VALUE] = val
+        if val != 0:
+            self.graph[i][j][INFLUENCE_VALUE] = val
+        else:
+            try:
+                self.graph.remove_edge(i,j)
+            except NetworkXError:
+                pass
     
     def set_tolerances(self, tolerance_list : list):
         if self.num_agents != len(tolerance_list):
