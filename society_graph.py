@@ -28,6 +28,10 @@ class Society_Graph:
         for i, val in enumerate(belief_list):
             self.set_belief(i, val)
     def set_belief(self, i, val):
+        if not val is float:
+            raise ValueError("Invalid belief value.")
+        if val > 1 or val < 0:
+            raise ValueError("Invalid belief value.")
         self.graph[i][BELIEF_VALUE] = val
     
     def set_influences(self, influence_matrix: np.ndarray):
@@ -40,6 +44,10 @@ class Society_Graph:
             for j in range(influence_matrix.shape[1]):
                 self.set_influence(i,j,influence_matrix[i][j])
     def set_influence(self, i, j, val):
+        if not val is int:
+            raise ValueError("Invalid influence value.")
+        if val < 0 or val > 1:
+            raise ValueError("Invalid influence value.")
         self.graph[i][j][INFLUENCE_VALUE] = val
     
     def set_tolerances(self, tolerance_list : list):
@@ -48,6 +56,10 @@ class Society_Graph:
         for i, val in enumerate(tolerance_list):
             self.set_tolerance(i, val)
     def set_tolerance(self, i, val):
+        if not val is int:
+            raise ValueError("Invalid tolerance value.")
+        if val < -1 or val > 1:
+            raise ValueError("Invalid tolerance value.")
         self.graph[i][TOLERANCE_VALUE] = val
     
     def apply_function(self, nbr, n):
