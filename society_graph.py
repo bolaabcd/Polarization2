@@ -3,10 +3,11 @@ import networkx as nx
 
 BELIEF_VALUE = "blf"
 INFLUENCE_VALUE = "inf"
-UPDATE_FUNCTION = "upfun"
+UPDATE_F = "upf"
 TOLERANCE_VALUE = "tol"
 
-# Each node has a tolerance value, an update-function, a belief value and an identifier.
+# Each node has a tolerance value, the f part of a belief-update-function, 
+# a belief value and an identifier.
 # Each edge has an influence value.
 class Society_Graph:
     def __init__(
@@ -15,22 +16,22 @@ class Society_Graph:
         initial_belief : list,
         initial_influence : np.ndarray,
         initial_tolerance : list,
-        initial_functions : list
+        initial_fs : list
         ):
         self.num_agents = num_agents
         self.graph = nx.DiGraph()
         self.set_beliefs(initial_belief)
         self.set_influences(initial_influence)
         self.set_tolerances(initial_tolerance)
-        self.set_functions(initial_functions)
+        self.set_fs(initial_fs)
 
-    def set_functions(self,functions_list : list):
-        if self.num_agents != len(functions_list):
-            raise ValueError("Invalid size of functions list.")
-        for i, fun in enumerate(functions_list):
-            self.set_function(i, fun)
-    def set_function(self, i : int, fun : function):
-        self.graph[i][UPDATE_FUNCTION] = fun
+    def set_fs(self,fs_list : list):
+        if self.num_agents != len(fs_list):
+            raise ValueError("Invalid size of fs list.")
+        for i, fun in enumerate(fs_list):
+            self.set_f(i, fun)
+    def set_f(self, i : int, fun : function):
+        self.graph[i][UPDATE_F] = fun
 
     def set_beliefs(self, belief_list : list):
         if self.num_agents != len(belief_list):
@@ -68,11 +69,11 @@ class Society_Graph:
             raise ValueError("Invalid tolerance value.")
         self.graph[i][TOLERANCE_VALUE] = val
     
-    def apply_function(self, nbr : int, n : int):
-        func = self.graph[n][UPDATE_FUNCTION]
+    def apply_f(self, nbr : int, n : int):
+        f = self.graph[n][UPDATE_F]
         diff = self.graph[nbr][BELIEF_VALUE] - self.graph[n][BELIEF_VALUE]
         tol = self.graph[nbr][TOLERANCE_VALUE]
-        return func(diff,tol)
+        return f(diff,tol) # x, k
         
     def set_between_0_1(self, n : int):
         self.graph[n][BELIEF_VALUE] = max(0,self.graph[n][BELIEF_VALUE])
@@ -82,6 +83,6 @@ class Society_Graph:
         for n in self.graph:
             sum = 0
             for nbr in self.graph.predecessors():
-                sum += self.apply_function(nbr,n)*self.graph[nbr][n][INFLUENCE_VALUE]
+                sum += self.apply_f(nbr,n)*self.graph[nbr][n][INFLUENCE_VALUE]
             self.graph[n][BELIEF_VALUE] += sum/self.graph.in_degree(n)
             self.set_between_0_1(n)
