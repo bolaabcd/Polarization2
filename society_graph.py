@@ -6,8 +6,8 @@ INFLUENCE_VALUE = "inf"
 UPDATE_FUNCTION = "upfun"
 TOLERANCE_VALUE = "tol"
 
-# Each node has a tolerance value, an update-function, a belief value and a identifier.
-# Each edge has a influence value.
+# Each node has a tolerance value, an update-function, a belief value and an identifier.
+# Each edge has an influence value.
 class Society_Graph:
     def __init__(
         self, 
@@ -24,11 +24,24 @@ class Society_Graph:
 
 
     def set_beliefs(self, belief_list : list):
-        pass
+        for i, val in enumerate(belief_list):
+            self.set_belief(i, val)
+    def set_belief(self, i, val):
+        self.graph[i][BELIEF_VALUE] = val
+    
     def set_influences(self, influence_matrix: np.ndarray):
-        pass
+        for i in range(influence_matrix.shape[0]):
+            for j in range(influence_matrix.shape[1]):
+                self.set_influence(i,j,influence_matrix[i][j])
+    def set_influence(self, i, j, val):
+        self.graph[i][j][INFLUENCE_VALUE] = val
+    
     def set_tolerances(self, tolerance_list : list):
-        pass
+        for i, val in enumerate(tolerance_list):
+            self.set_tolerance(i, val)
+    def set_tolerance(self, i, val):
+        self.graph[i][TOLERANCE_VALUE] = val
+    
     def apply_function(self, nbr, n):
         func = self.graph[n][UPDATE_FUNCTION]
         diff = self.graph[nbr][BELIEF_VALUE] - self.graph[n][BELIEF_VALUE]
