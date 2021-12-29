@@ -127,7 +127,7 @@ class Society_Graph:
             diff = np.transpose(diff) - diff
             preAns = f0(diff,tol_mat)*inf_mat
             preAns = np.add.reduce(preAns) / neighbours
-            np.nan_to_num(preAns)
+            preAns = np.nan_to_num(preAns)
             preAns += blf_mat
             blf_mat = np.clip(preAns,0,1)
             self.belief_history.append(np.ndarray.tolist(blf_mat))
