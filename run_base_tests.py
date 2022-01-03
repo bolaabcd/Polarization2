@@ -1,4 +1,4 @@
-from base_tests import *
+from parameter_tests import *
 simple_tripartite_param_list = []
 print(0)
 tolerance_0 = []
@@ -860,3 +860,32 @@ tripartite_two_nonconstant_influencers_param_list.append((weak_inf_0,"weak_inf_0
 simulate((tripartite_two_nonconstant_influencers_param_list,"tripartite_two_nonconstant_influencers"))
 del tripartite_two_nonconstant_influencers_param_list
 print(11)
+
+
+simple_tripartite_2_param_list = []
+print(0)
+one_rational = []
+for i in range(1):
+    gr = simple_tripartite(
+        33,
+        belief_update_fs.quadratic_update,
+        0,
+        0.5,
+        1,
+        -0.5,
+        0,
+        0.5,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+    )
+    one_rational.append(gr)
+simple_tripartite_2_param_list.append((one_rational,"one_rational"))
+
+simulate((simple_tripartite_2_param_list,"simple_tripartite_2"))
+del simple_tripartite_2_param_list
+print(12)
