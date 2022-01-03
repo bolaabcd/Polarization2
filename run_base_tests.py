@@ -1,4 +1,4 @@
-from parameter_tests import *
+from example_cases import *
 simple_tripartite_param_list = []
 print(0)
 tolerance_0 = []
