@@ -1,3 +1,5 @@
+import numpy as np
+
 # f(x,k) part of the belief-update functions 
 
 def line_update(x : float, k : float):
@@ -5,9 +7,17 @@ def line_update(x : float, k : float):
 
 def modulus_update(x : float, k : float):
     k=0.5*k+0.5 # g(k)
-    sigx = -1
-    if x >= 0:
-        sigx = 1
+    
+    sigx = None
+    if type(x) is float: 
+        sigx = -1
+        if x >= 0:
+            sigx = 1
+    else:
+        sigx = np.copy(x)
+        sigx[sigx >= 0] = 1
+        sigx[sigx <  0] = -1
+
     y = sigx*(-abs(abs(x)-k)+k)
     return y
 
