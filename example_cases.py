@@ -27,7 +27,7 @@ def simple_clique_consensus(
             num_agents,
             np.array([consensus_value for i in range(num_agents)]),
             default_influences.build_inf_graph_clique(num_agents,influence_value),
-            default_tolerances.build_tol_graph_constant(num_agents,tolerance_value),
+            default_tolerances.build_tol_list_constant(num_agents,tolerance_value),
             default_fs.same(num_agents,function)
         )
 
@@ -44,7 +44,7 @@ def simple_clique_uniform(
             num_agents,
             np.array([start_value+(end_value-start_value)*i/(num_agents-1) for i in range(num_agents)]),
             default_influences.build_inf_graph_clique(num_agents,influence_value),
-            default_tolerances.build_tol_graph_constant(num_agents,tolerance_value),
+            default_tolerances.build_tol_list_constant(num_agents,tolerance_value),
             default_fs.same(num_agents,function)
         )
 
