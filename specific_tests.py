@@ -42,3 +42,25 @@ plt.show()
 plt.close()
 not_consensus.plot_history()
 plt.show()
+
+amt = np.float128(32) # need to be > 16 to have error. Doesn't seem like precision error
+amtint = int(32) # Precision error if not potency of 2
+sufficient_backfire = Society_Graph(
+    amtint,
+    [i/(amt/2) for i in range(int(amtint/2+1))] + [((amt/2)-i)/(amt/2) for i in range(1,int(amtint/2))],
+    np.zeros((amtint,amtint)),
+    [-1+1/(amt/2)+1/amt for i in range(amtint)],
+    [ modulus_update for i in range(amtint)]
+)
+
+edges_list = []
+for i in range(amtint):
+    edges_list.append((i,(i+1)%int(amtint)))
+sufficient_backfire.graph.add_edges_from(edges_list,inf = 1/2**1)
+
+sufficient_backfire.quick_update(100)
+plt.close()
+sufficient_backfire.plot_history()
+plt.show()
+
+
