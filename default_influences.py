@@ -26,23 +26,23 @@ GROUPS_FAINTLY_INF_VALUE_STRONG = 0.5
 ## for 2_groups_faint ineraction-function: belief value of all agents that can weakly communicate in a 2 groups faintly connected influence graph
 GROUPS_FAINTLY_INF_VALUE_WEAK = 0.1
 
-## for 2_influencers_balanced influence-graph: level of influence both influencers exert on all others
-INFLUENCERS_BALANCED_OUTGOING_BOTH = 0.6
-## for 2_influencers_balanced influence-graph: level of influence both influencers receive from all others
-INFLUENCERS_BALANCED_INCOMING_BOTH = 0.0
-## for 2_influencers_balanced influence-graph: level of influence all other agents exert on all others
-INFLUENCERS_BALANCED_OTHERS = 0.1
-
-## for 2_influencers_unbalanced influence-graph: level of influence agent 0 exerts on all others
-INFLUENCERS_UNBALANCED_OUTGOING_FIRST = 0.8
-## for 2_influencers_unbalanced influence-graph: level of influence agent n-1 exerts on all others
-INFLUENCERS_UNBALANCED_OUTGOING_SECOND = 0.5
-## for 2_influencers_unbalanced influence-graph: level of influence agent 0 receives from all others
-INFLUENCERS_UNBALANCED_INCOMING_FIRST = 0.1
-## for 2_influencers_unbalanced influence-graph: level of influence agent n-1 receives from all others
-INFLUENCERS_UNBALANCED_INCOMING_SECOND = 0.1
+## for 2_influencers_unbalanced influence-graph: level of influence both influencers exert on all others
+INFLUENCERS_UNBALANCED_OUTGOING_BOTH = 0.6
+## for 2_influencers_unbalanced influence-graph: level of influence both influencers receive from all others
+INFLUENCERS_UNBALANCED_INCOMING_BOTH = 0.0
 ## for 2_influencers_unbalanced influence-graph: level of influence all other agents exert on all others
-INFLUENCERS_UNBALANCED_OTHERS = 0.2
+INFLUENCERS_UNBALANCED_OTHERS = 0.1
+
+## for 2_influencers_balanced influence-graph: level of influence agent 0 exerts on all others
+INFLUENCERS_BALANCED_OUTGOING_FIRST = 0.8
+## for 2_influencers_balanced influence-graph: level of influence agent n-1 exerts on all others
+INFLUENCERS_BALANCED_OUTGOING_SECOND = 0.5
+## for 2_influencers_balanced influence-graph: level of influence agent 0 receives from all others
+INFLUENCERS_BALANCED_INCOMING_FIRST = 0.1
+## for 2_influencers_balanced influence-graph: level of influence agent n-1 receives from all others
+INFLUENCERS_BALANCED_INCOMING_SECOND = 0.1
+## for 2_influencers_balanced influence-graph: level of influence all other agents exert on all others
+INFLUENCERS_BALANCED_OTHERS = 0.2
 
 ## for circular influence-graph: belief value of all agents on a circular influence graph
 CIRCULAR_INF_VALUE = 0.5
@@ -75,8 +75,8 @@ def build_inf_graph_2_groups_faint(num_agents, weak_belief_value, strong_belief_
     inf_graph[middle:, middle:] = strong_belief_value
     return inf_graph
 
-def build_inf_graph_2_influencers_balanced(num_agents, influencers_incoming_value, influencers_outgoing_value, others_belief_value):
-    """Returns the influence graph for for "balanced 2-influencers" scenario."""
+def build_inf_graph_2_influencers_unbalanced(num_agents, influencers_incoming_value, influencers_outgoing_value, others_belief_value):
+    """Returns the influence graph for for "unbalanced 2-influencers" scenario."""
     inf_graph = np.full((num_agents, num_agents), others_belief_value)
     ## Sets the influence of agent 0 on all others
     inf_graph[0, :-1] = influencers_outgoing_value
@@ -88,8 +88,8 @@ def build_inf_graph_2_influencers_balanced(num_agents, influencers_incoming_valu
     inf_graph[:-1, -1] = influencers_incoming_value
     return inf_graph
 
-def build_inf_graph_2_influencers_unbalanced(num_agents, influencers_outgoing_value_first, influencers_outgoing_value_second, influencers_incoming_value_first, influencers_incoming_value_second, others_belief_value):
-    """Returns the influence graph for for "unbalanced 2-influencers" scenario."""
+def build_inf_graph_2_influencers_balanced(num_agents, influencers_outgoing_value_first, influencers_outgoing_value_second, influencers_incoming_value_first, influencers_incoming_value_second, others_belief_value):
+    """Returns the influence graph for for "balanced 2-influencers" scenario."""
     inf_graph = np.full((num_agents,num_agents), others_belief_value)
     ## Sets the influence of agent 0 on all others
     inf_graph[0, :-1] = influencers_outgoing_value_first
@@ -121,8 +121,8 @@ class Default_Influence(Enum):
     CLIQUE = 0
     GROUP_2_DISCONECTED = 1
     GROUP_2_FAINT = 2
-    INFLUENCERS_2_BALANCED = 3
-    INFLUENCERS_2_UNBALANCED = 4
+    INFLUENCERS_2_UNBALANCED = 3
+    INFLUENCERS_2_BALANCED = 4
     CIRCULAR = 5
     RANDOM = 6
 
@@ -135,8 +135,8 @@ def build_influence(
         general_belief=None,
         influencer_incoming_belief=None,
         influencer_outgoing_belief=None,
-        influencer2_incoming_belief=INFLUENCERS_UNBALANCED_INCOMING_SECOND,
-        influencer2_outgoing_belief=INFLUENCERS_UNBALANCED_OUTGOING_SECOND,
+        influencer2_incoming_belief=INFLUENCERS_BALANCED_INCOMING_SECOND,
+        influencer2_outgoing_belief=INFLUENCERS_BALANCED_OUTGOING_SECOND,
         minimum_influence = MIN_INF,
         diagonal_value = None):
     """Builds the initial influence graph according to the `inf_type`.
@@ -154,26 +154,26 @@ def build_influence(
         return build_inf_graph_2_groups_disconnected(num_agents, general_belief)
     if inf_type is Default_Influence.GROUP_2_FAINT:
         return build_inf_graph_2_groups_faint(num_agents, weak_belief, strong_belief)
-    if inf_type is Default_Influence.INFLUENCERS_2_BALANCED:
-        if general_belief is None:
-            general_belief = INFLUENCERS_BALANCED_OTHERS
-        if influencer_incoming_belief is None:
-            influencer_incoming_belief = INFLUENCERS_BALANCED_INCOMING_BOTH
-        if influencer_outgoing_belief is None:
-            influencer_outgoing_belief = INFLUENCERS_BALANCED_OUTGOING_BOTH
-        return build_inf_graph_2_influencers_balanced(num_agents, influencer_incoming_belief, influencer_outgoing_belief, general_belief)
     if inf_type is Default_Influence.INFLUENCERS_2_UNBALANCED:
         if general_belief is None:
             general_belief = INFLUENCERS_UNBALANCED_OTHERS
         if influencer_incoming_belief is None:
-            influencer_incoming_belief = INFLUENCERS_UNBALANCED_INCOMING_FIRST
-        if influencer2_incoming_belief is None:
-            influencer2_incoming_belief = INFLUENCERS_UNBALANCED_INCOMING_SECOND
+            influencer_incoming_belief = INFLUENCERS_UNBALANCED_INCOMING_BOTH
         if influencer_outgoing_belief is None:
-            influencer_outgoing_belief = INFLUENCERS_UNBALANCED_OUTGOING_FIRST
+            influencer_outgoing_belief = INFLUENCERS_UNBALANCED_OUTGOING_BOTH
+        return build_inf_graph_2_influencers_unbalanced(num_agents, influencer_incoming_belief, influencer_outgoing_belief, general_belief)
+    if inf_type is Default_Influence.INFLUENCERS_2_BALANCED:
+        if general_belief is None:
+            general_belief = INFLUENCERS_BALANCED_OTHERS
+        if influencer_incoming_belief is None:
+            influencer_incoming_belief = INFLUENCERS_BALANCED_INCOMING_FIRST
+        if influencer2_incoming_belief is None:
+            influencer2_incoming_belief = INFLUENCERS_BALANCED_INCOMING_SECOND
+        if influencer_outgoing_belief is None:
+            influencer_outgoing_belief = INFLUENCERS_BALANCED_OUTGOING_FIRST
         if influencer2_outgoing_belief is None:
-            influencer2_outgoing_belief = INFLUENCERS_UNBALANCED_OUTGOING_SECOND
-        return build_inf_graph_2_influencers_unbalanced(num_agents, influencer_outgoing_belief, influencer2_outgoing_belief, influencer_incoming_belief, influencer2_incoming_belief, general_belief)
+            influencer2_outgoing_belief = INFLUENCERS_BALANCED_OUTGOING_SECOND
+        return build_inf_graph_2_influencers_balanced(num_agents, influencer_outgoing_belief, influencer2_outgoing_belief, influencer_incoming_belief, influencer2_incoming_belief, general_belief)
     if inf_type is Default_Influence.CIRCULAR:
         if general_belief is None:
             general_belief = CIRCULAR_INF_VALUE
