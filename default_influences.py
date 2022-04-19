@@ -33,10 +33,11 @@ INFLUENCERS_UNBALANCED_INCOMING_BOTH = 0.0
 ## for 2_influencers_unbalanced influence-graph: level of influence all other agents exert on all others
 INFLUENCERS_UNBALANCED_OTHERS = 0.1
 
+## Note that this influence graph is not really balanced by our definition of balanced
 ## for 2_influencers_balanced influence-graph: level of influence agent 0 exerts on all others
 INFLUENCERS_BALANCED_OUTGOING_FIRST = 0.8
 ## for 2_influencers_balanced influence-graph: level of influence agent n-1 exerts on all others
-INFLUENCERS_BALANCED_OUTGOING_SECOND = 0.5
+INFLUENCERS_BALANCED_OUTGOING_SECOND = 0.8
 ## for 2_influencers_balanced influence-graph: level of influence agent 0 receives from all others
 INFLUENCERS_BALANCED_INCOMING_FIRST = 0.1
 ## for 2_influencers_balanced influence-graph: level of influence agent n-1 receives from all others
@@ -88,6 +89,7 @@ def build_inf_graph_2_influencers_unbalanced(num_agents, influencers_incoming_va
     inf_graph[:-1, -1] = influencers_incoming_value
     return inf_graph
 
+## Note that this influence graph is not really balanced by our definition of balanced
 def build_inf_graph_2_influencers_balanced(num_agents, influencers_outgoing_value_first, influencers_outgoing_value_second, influencers_incoming_value_first, influencers_incoming_value_second, others_belief_value):
     """Returns the influence graph for for "balanced 2-influencers" scenario."""
     inf_graph = np.full((num_agents,num_agents), others_belief_value)
@@ -162,6 +164,8 @@ def build_influence(
         if influencer_outgoing_belief is None:
             influencer_outgoing_belief = INFLUENCERS_UNBALANCED_OUTGOING_BOTH
         return build_inf_graph_2_influencers_unbalanced(num_agents, influencer_incoming_belief, influencer_outgoing_belief, general_belief)
+
+## Note that this influence graph is not really balanced by our definition of balanced
     if inf_type is Default_Influence.INFLUENCERS_2_BALANCED:
         if general_belief is None:
             general_belief = INFLUENCERS_BALANCED_OTHERS
