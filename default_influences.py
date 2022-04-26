@@ -56,27 +56,34 @@ MIN_INF = 0
 ## Default_Influence graphs implementation
 #####################################
 
-def build_inf_graph_clique(num_agents, belief_value):
+def build_inf_graph_clique(num_agents, belief_value, diagonal_value = 0):
     """Returns the influence graph for "clique" scenario."""
-    return np.full((num_agents, num_agents), belief_value)
+    inf_graph = np.full((num_agents, num_agents), belief_value)
+    if diagonal_value!=None:
+        np.fill_diagonal(inf_graph,diagonal_value)
+    return inf_graph
 
-def build_inf_graph_2_groups_disconnected(num_agents, belief_value):
+def build_inf_graph_2_groups_disconnected(num_agents, belief_value, diagonal_value = 0):
     """Returns the influence graph for for "disconnected" scenario."""
     inf_graph = np.zeros((num_agents, num_agents))
     middle = math.ceil(num_agents / 2)
     inf_graph[:middle, :middle] = belief_value
     inf_graph[middle:, middle:] = belief_value
+    if diagonal_value!=None:
+        np.fill_diagonal(inf_graph,diagonal_value)
     return inf_graph
 
-def build_inf_graph_2_groups_faint(num_agents, weak_belief_value, strong_belief_value):
+def build_inf_graph_2_groups_faint(num_agents, weak_belief_value, strong_belief_value, diagonal_value = 0):
     """Returns the influence graph for for "faintly-connected" scenario."""
     inf_graph = np.full((num_agents, num_agents), weak_belief_value)
     middle = math.ceil(num_agents / 2)
     inf_graph[:middle, :middle] = strong_belief_value
     inf_graph[middle:, middle:] = strong_belief_value
+    if diagonal_value!=None:
+        np.fill_diagonal(inf_graph,diagonal_value)
     return inf_graph
 
-def build_inf_graph_2_influencers_unbalanced(num_agents, influencers_incoming_value, influencers_outgoing_value, others_belief_value):
+def build_inf_graph_2_influencers_unbalanced(num_agents, influencers_incoming_value, influencers_outgoing_value, others_belief_value, diagonal_value= 0):
     """Returns the influence graph for for "unbalanced 2-influencers" scenario."""
     inf_graph = np.full((num_agents, num_agents), others_belief_value)
     ## Sets the influence of agent 0 on all others
@@ -87,10 +94,12 @@ def build_inf_graph_2_influencers_unbalanced(num_agents, influencers_incoming_va
     inf_graph[1:,0] = influencers_incoming_value
     ## Sets the influence of all other agents on agent n-1.
     inf_graph[:-1, -1] = influencers_incoming_value
+    if diagonal_value!=None:
+        np.fill_diagonal(inf_graph,diagonal_value)
     return inf_graph
 
 ## Note that this influence graph is not really balanced by our definition of balanced
-def build_inf_graph_2_influencers_balanced(num_agents, influencers_outgoing_value_first, influencers_outgoing_value_second, influencers_incoming_value_first, influencers_incoming_value_second, others_belief_value):
+def build_inf_graph_2_influencers_balanced(num_agents, influencers_outgoing_value_first, influencers_outgoing_value_second, influencers_incoming_value_first, influencers_incoming_value_second, others_belief_value, diagonal_value = 0):
     """Returns the influence graph for for "balanced 2-influencers" scenario."""
     inf_graph = np.full((num_agents,num_agents), others_belief_value)
     ## Sets the influence of agent 0 on all others
@@ -101,23 +110,27 @@ def build_inf_graph_2_influencers_balanced(num_agents, influencers_outgoing_valu
     inf_graph[1:, 0] = influencers_incoming_value_first
     ## Sets the influence of all other agents on agent n-1.
     inf_graph[:-1, -1] = influencers_incoming_value_second
+    if diagonal_value!=None:
+        np.fill_diagonal(inf_graph,diagonal_value)
     return inf_graph
 
-def build_inf_graph_circular(num_agents, value):
+def build_inf_graph_circular(num_agents, value, diagonal_value = 0):
     """Returns the imfluemce graph for "circular influence" scenario."""
     inf_graph = np.zeros((num_agents, num_agents))
     for i in range(num_agents):
         inf_graph[i, i] = 1.0
         inf_graph[i, (i+1) % num_agents] = value
+    if diagonal_value!=None:
+        np.fill_diagonal(inf_graph,diagonal_value)
     return inf_graph
 
-def build_inf_graph_random(num_agents,diagonal_value=1,minimum_influence=MIN_INF):
+def build_inf_graph_random(num_agents,diagonal_value=0,minimum_influence=MIN_INF):
     conects=np.random.random_integers(0,1,(num_agents,num_agents))
     rands=np.random.uniform(minimum_influence,1,(num_agents,num_agents))
-    ans=conects*rands
+    inf_graph=conects*rands
     if diagonal_value!=None:
-        np.fill_diagonal(ans,diagonal_value)
-    return ans
+        np.fill_diagonal(inf_graph,diagonal_value)
+    return inf_graph
 
 class Default_Influence(Enum):
     CLIQUE = 0
@@ -140,7 +153,7 @@ def build_influence(
         influencer2_incoming_belief=INFLUENCERS_BALANCED_INCOMING_SECOND,
         influencer2_outgoing_belief=INFLUENCERS_BALANCED_OUTGOING_SECOND,
         minimum_influence = MIN_INF,
-        diagonal_value = None):
+        diagonal_value = 0):
     """Builds the initial influence graph according to the `inf_type`.
 
     Helper function when iterating over the `Default_Influence` enum. The default values
@@ -149,13 +162,13 @@ def build_influence(
     if inf_type is Default_Influence.CLIQUE:
         if general_belief is None:
             general_belief = CLIQUE_INF_VALUE
-        return build_inf_graph_clique(num_agents, general_belief)
+        return build_inf_graph_clique(num_agents, general_belief,diagonal_value=diagonal_value)
     if inf_type is Default_Influence.GROUP_2_DISCONECTED:
         if general_belief is None:
             general_belief = GROUPS_DISCONNECTED_INF_VALUE
-        return build_inf_graph_2_groups_disconnected(num_agents, general_belief)
+        return build_inf_graph_2_groups_disconnected(num_agents, general_belief,diagonal_value=diagonal_value)
     if inf_type is Default_Influence.GROUP_2_FAINT:
-        return build_inf_graph_2_groups_faint(num_agents, weak_belief, strong_belief)
+        return build_inf_graph_2_groups_faint(num_agents, weak_belief, strong_belief,diagonal_value=diagonal_value)
     if inf_type is Default_Influence.INFLUENCERS_2_UNBALANCED:
         if general_belief is None:
             general_belief = INFLUENCERS_UNBALANCED_OTHERS
@@ -163,7 +176,7 @@ def build_influence(
             influencer_incoming_belief = INFLUENCERS_UNBALANCED_INCOMING_BOTH
         if influencer_outgoing_belief is None:
             influencer_outgoing_belief = INFLUENCERS_UNBALANCED_OUTGOING_BOTH
-        return build_inf_graph_2_influencers_unbalanced(num_agents, influencer_incoming_belief, influencer_outgoing_belief, general_belief)
+        return build_inf_graph_2_influencers_unbalanced(num_agents, influencer_incoming_belief, influencer_outgoing_belief, general_belief,diagonal_value=diagonal_value)
 
 ## Note that this influence graph is not really balanced by our definition of balanced
     if inf_type is Default_Influence.INFLUENCERS_2_BALANCED:
@@ -177,11 +190,11 @@ def build_influence(
             influencer_outgoing_belief = INFLUENCERS_BALANCED_OUTGOING_FIRST
         if influencer2_outgoing_belief is None:
             influencer2_outgoing_belief = INFLUENCERS_BALANCED_OUTGOING_SECOND
-        return build_inf_graph_2_influencers_balanced(num_agents, influencer_outgoing_belief, influencer2_outgoing_belief, influencer_incoming_belief, influencer2_incoming_belief, general_belief)
+        return build_inf_graph_2_influencers_balanced(num_agents, influencer_outgoing_belief, influencer2_outgoing_belief, influencer_incoming_belief, influencer2_incoming_belief, general_belief,diagonal_value=diagonal_value)
     if inf_type is Default_Influence.CIRCULAR:
         if general_belief is None:
             general_belief = CIRCULAR_INF_VALUE
-        return build_inf_graph_circular(num_agents, general_belief) 
+        return build_inf_graph_circular(num_agents, general_belief,diagonal_value=diagonal_value) 
     if inf_type is Default_Influence.RANDOM:
         return build_inf_graph_random(
             num_agents,
