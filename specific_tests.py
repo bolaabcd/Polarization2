@@ -124,11 +124,12 @@ import os
 # Case where backfire-effect is good:
 
 f1 = quadratic_update
-tolv = 1 # not consensus
-# tolv = -1/2 # consensus (except extremes)
+# tolv = 1 # not consensus
+tolv = -1/2 # consensus (except extremes)
 # tolv = -1/2-1/8-1/256-1/512-1/2**13-1/2**15 # as many time steps as wanted, groups reverse
 # tolv=-1/2-1/16-1/64-1/128-1/512 # 5 agents in the middle
 # tolv=-1/2-1/8-1/256-1/512-1/2**13-1/2**15-1/2**16-1/2**20-1/2**22 # with 500 time steps
+# tolv = -3/4
 good_bf = Society_Graph(
     1,
     [0],
@@ -196,3 +197,23 @@ good_bf.quick_update(100)
 good_bf.plot_history()
 plt.savefig(f"generated/Quadratic/two_opposing_groups/tol{tolv}.svg")
 # plt.show()
+
+print(good_bf.get_beliefs()[1], good_bf.get_beliefs()[r2[0]], good_bf.get_beliefs()[r3[0]])
+
+plt.close()
+good_bf.plot_polarization()
+siz = len(good_bf.polarization_history)
+plt.title(f"Final value = {good_bf.polarization_history[siz-1]}")
+plt.savefig(f"generated/Quadratic/two_opposing_groups/pol_tol{tolv}.svg")
+plt.close()
+
+# Why I believe we should change the polarization measure:
+
+from polarization_measure import pol_ER_discretized
+x = np.linspace(0,0.5,1000)
+xp = [[0,0.5-i,0.5+i,1] for i in x]
+y = [pol_ER_discretized(i) for i in xp]
+plt.plot(x,y)
+plt.show()
+
+# It is bigger if all agents are in the middle!
