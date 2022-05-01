@@ -26,11 +26,12 @@ class Society_Graph:
         self.num_agents = num_agents
         self.graph = nx.DiGraph()
         for i in range(num_agents):
-            self.graph.add_node(i)
+            self.graph.add_node(i,subset = 0)
         self.set_beliefs(initial_belief)
         self.set_influences(initial_influence)
         self.set_tolerances(initial_tolerance)
         self.set_fs(initial_fs)
+        self.subsets = 1
 
     def set_fs(self,fs_list : list):
         if self.num_agents != len(fs_list):
@@ -145,10 +146,12 @@ class Society_Graph:
             self.set_belief(i+n,other.nodes[i][BELIEF_VALUE])
             self.set_tolerance(i+n,other.nodes[i][TOLERANCE_VALUE])
             self.set_f(i+n,other.nodes[i][UPDATE_F])
+            self.graph.nodes[i+n]['subset'] = self.subsets
         for i,j in other.edges():
             self.set_influence(i+n,j+n,other[i][j][INFLUENCE_VALUE])
         self.num_agents = self.graph.number_of_nodes()
         self.belief_history = [self.get_beliefs()]
+        self.subsets += 1
     
     def draw_graph(self):
         nx.draw(self.graph)
