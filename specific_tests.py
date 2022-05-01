@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from example_cases import simple_clique_uniform, all_edges
 from networkx.drawing import draw_networkx,multipartite_layout
 import networkx as nx
+from default_influences import build_influence, Default_Influence
 import os
 
 
@@ -121,100 +122,141 @@ import os
 # plt.close()
 
 
-# Case where backfire-effect is good:
+# # Case where backfire-effect is good:
 
-f1 = quadratic_update
-# tolv = 1 # not consensus
-tolv = -1/2 # consensus (except extremes)
-# tolv = -1/2-1/8-1/256-1/512-1/2**13-1/2**15 # as many time steps as wanted, groups reverse
-# tolv=-1/2-1/16-1/64-1/128-1/512 # 5 agents in the middle
-# tolv=-1/2-1/8-1/256-1/512-1/2**13-1/2**15-1/2**16-1/2**20-1/2**22 # with 500 time steps
-# tolv = -3/4
-good_bf = Society_Graph(
-    1,
-    [0],
-    np.array([[0]]),
-    [1],
-    [f1]
-)
+# f1 = quadratic_update
+# # tolv = 1 # not consensus
+# tolv = -1/2 # consensus (except extremes)
+# # tolv = -1/2-1/8-1/256-1/512-1/2**13-1/2**15 # as many time steps as wanted, groups reverse
+# # tolv=-1/2-1/16-1/64-1/128-1/512 # 5 agents in the middle
+# # tolv=-1/2-1/8-1/256-1/512-1/2**13-1/2**15-1/2**16-1/2**20-1/2**22 # with 500 time steps
+# # tolv = -3/4
+# good_bf = Society_Graph(
+#     1,
+#     [0],
+#     np.array([[0]]),
+#     [1],
+#     [f1]
+# )
 
-botton_group = simple_clique_uniform(10,f1,0.1,0.3,tolv,1)
-middle_group = simple_clique_uniform(10,f1,0.4,0.6,tolv,1)
-top_group = simple_clique_uniform(10,f1,0.7,0.9,tolv,1)
-last_one = Society_Graph(1,[1],np.array([[0]]),[1],[f1])
+# botton_group = simple_clique_uniform(10,f1,0.1,0.3,tolv,1)
+# middle_group = simple_clique_uniform(10,f1,0.4,0.6,tolv,1)
+# top_group = simple_clique_uniform(10,f1,0.7,0.9,tolv,1)
+# last_one = Society_Graph(1,[1],np.array([[0]]),[1],[f1])
 
-# nx.set_node_attributes(good_bf.graph,1,"subset")
-# nx.set_node_attributes(botton_group.graph,2,"subset")
-# nx.set_node_attributes(middle_group.graph,3,"subset")
-# nx.set_node_attributes(top_group.graph,4,"subset")
+# # nx.set_node_attributes(good_bf.graph,1,"subset")
+# # nx.set_node_attributes(botton_group.graph,2,"subset")
+# # nx.set_node_attributes(middle_group.graph,3,"subset")
+# # nx.set_node_attributes(top_group.graph,4,"subset")
 
 
-good_bf.append(botton_group)
-fin1 = good_bf.num_agents
-r1 = range(1,fin1)
-good_bf.append(middle_group)
-fin2 = good_bf.num_agents
-r2 = range(fin1,fin2)
-good_bf.append(top_group)
-r3 = range(fin2,good_bf.num_agents)
-good_bf.append(last_one)
-lpos = good_bf.num_agents-1
-good_bf.graph.add_edges_from(all_edges([0],r1),inf=1)
-good_bf.graph.add_edges_from(all_edges([lpos],r3),inf=1)
-good_bf.graph.add_edges_from(all_edges(r1,r2),inf=1)
-good_bf.graph.add_edges_from(all_edges(r3,r2),inf=1)
-good_bf.graph.add_edges_from(all_edges(r2,r1),inf=1)
-good_bf.graph.add_edges_from(all_edges(r2,r3),inf=1)
+# good_bf.append(botton_group)
+# fin1 = good_bf.num_agents
+# r1 = range(1,fin1)
+# good_bf.append(middle_group)
+# fin2 = good_bf.num_agents
+# r2 = range(fin1,fin2)
+# good_bf.append(top_group)
+# r3 = range(fin2,good_bf.num_agents)
+# good_bf.append(last_one)
+# lpos = good_bf.num_agents-1
+# good_bf.graph.add_edges_from(all_edges([0],r1),inf=1)
+# good_bf.graph.add_edges_from(all_edges([lpos],r3),inf=1)
+# good_bf.graph.add_edges_from(all_edges(r1,r2),inf=1)
+# good_bf.graph.add_edges_from(all_edges(r3,r2),inf=1)
+# good_bf.graph.add_edges_from(all_edges(r2,r1),inf=1)
+# good_bf.graph.add_edges_from(all_edges(r2,r3),inf=1)
 
-red = (1,0,0)
-green = (0,1,0)
-blue = (0,0,1)
-orange = (1,0.5,0)
-lblue = (0,0.5,1)
+# red = (1,0,0)
+# green = (0,1,0)
+# blue = (0,0,1)
+# orange = (1,0.5,0)
+# lblue = (0,0.5,1)
+# # draw_networkx(
+# #     good_bf.graph,
+# #     node_color=[red]+[orange for i in r1]+[green for i in r2]+[lblue for i in r3] + [blue],
+# #     with_labels=False,
+# #     pos = multipartite_layout(good_bf.graph)
+# # )
+
+# plt.close()
+# plt.figure(figsize=(16,10))
 # draw_networkx(
 #     good_bf.graph,
 #     node_color=[red]+[orange for i in r1]+[green for i in r2]+[lblue for i in r3] + [blue],
 #     with_labels=False,
-#     pos = multipartite_layout(good_bf.graph)
+#     pos = nx.shell_layout(good_bf.graph,[r2,list(r1)+list(r3),[0,lpos]]),
 # )
+# if not os.path.exists("generated/Quadratic/two_opposing_groups/"):
+#     os.mkdir("generated/Quadratic/two_opposing_groups/")
+# plt.savefig("generated/Quadratic/two_opposing_groups/two_opposing_groups.svg")
+# # plt.show()
 
-plt.close()
-plt.figure(figsize=(16,10))
-draw_networkx(
-    good_bf.graph,
-    node_color=[red]+[orange for i in r1]+[green for i in r2]+[lblue for i in r3] + [blue],
-    with_labels=False,
-    pos = nx.shell_layout(good_bf.graph,[r2,list(r1)+list(r3),[0,lpos]]),
+
+# plt.close()
+# good_bf.quick_update(100)
+# good_bf.plot_history()
+# plt.savefig(f"generated/Quadratic/two_opposing_groups/tol{tolv}.svg")
+# # plt.show()
+
+# print(good_bf.get_beliefs()[1], good_bf.get_beliefs()[r2[0]], good_bf.get_beliefs()[r3[0]])
+
+# plt.close()
+# good_bf.plot_polarization()
+# siz = len(good_bf.polarization_history)
+# plt.title(f"Final value = {good_bf.polarization_history[siz-1]}")
+# plt.savefig(f"generated/Quadratic/two_opposing_groups/pol_tol{tolv}.svg")
+# plt.close()
+
+# # Why I believe we should change the polarization measure:
+
+# from polarization_measure import pol_ER_discretized
+# x = np.linspace(0,0.5,1000)
+# xp = [[0,0.5-i,0.5+i,1] for i in x]
+# y = [pol_ER_discretized(i) for i in xp]
+# plt.plot(x,y)
+# plt.show()
+
+# # It is bigger if all agents are in the middle!
+# # This is why I added the idea that constant agents don't count for polarization.
+
+
+# Non-monotonicity of max^t and min^t
+f = quadratic_update
+name = "non_mon"
+
+gr = Society_Graph(
+    100,
+    [0.03+i/(100 - 1)*0.94 for i in range(100)],
+    build_influence(Default_Influence.CLIQUE,100,general_belief=0.5),
+    [-0.42 for i in range(100)],
+    [f for i in range(100)]
 )
-if not os.path.exists("generated/Quadratic/two_opposing_groups/"):
-    os.mkdir("generated/Quadratic/two_opposing_groups/")
-plt.savefig("generated/Quadratic/two_opposing_groups/two_opposing_groups.svg")
+gr.quick_update(200)
+plt.close()
+gr.plot_history()
+if not os.path.exists("generated/Quadratic/"+name):
+    os.mkdir("generated/Quadratic/"+name)
+plt.savefig("generated/Quadratic/"+name+'/ags.jpg')
 # plt.show()
-
-
 plt.close()
-good_bf.quick_update(100)
-good_bf.plot_history()
-plt.savefig(f"generated/Quadratic/two_opposing_groups/tol{tolv}.svg")
+siz = len(gr.polarization_history)
+plt.title(f"Final value = {gr.polarization_history[siz-1]}")
+gr.plot_polarization()
+plt.savefig("generated/Quadratic/"+name+'/pol.jpg')
 # plt.show()
-
-print(good_bf.get_beliefs()[1], good_bf.get_beliefs()[r2[0]], good_bf.get_beliefs()[r3[0]])
-
 plt.close()
-good_bf.plot_polarization()
-siz = len(good_bf.polarization_history)
-plt.title(f"Final value = {good_bf.polarization_history[siz-1]}")
-plt.savefig(f"generated/Quadratic/two_opposing_groups/pol_tol{tolv}.svg")
+gr.draw_graph()
+plt.savefig("generated/Quadratic/"+name+'/'+name+'.jpg')
+# plt.show()
 plt.close()
-
-# Why I believe we should change the polarization measure:
-
-from polarization_measure import pol_ER_discretized
-x = np.linspace(0,0.5,1000)
-xp = [[0,0.5-i,0.5+i,1] for i in x]
-y = [pol_ER_discretized(i) for i in xp]
+x = np.linspace(-1,1)
+y = f(x,-0.42)
+y = np.clip(y,-1,1)
 plt.plot(x,y)
-plt.show()
-
-# It is bigger if all agents are in the middle!
-# This is why I added the idea that constant agents don't count for polarization.
+plt.plot(x,x)
+plt.plot(x,np.zeros(x.shape))
+plt.plot(np.zeros(y.shape),x)
+plt.savefig("generated/Quadratic/"+name+'/f.jpg')
+# plt.show()
+plt.close()
