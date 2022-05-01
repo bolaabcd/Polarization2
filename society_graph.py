@@ -49,7 +49,11 @@ class Society_Graph:
         for i, val in enumerate(belief_list):
             self.set_belief(i, val)
         self.belief_history.append(self.get_beliefs())
-        self.polarization_history.append(self.pol(self.get_beliefs()))
+        constant_agents = []
+        for i in range(self.num_agents):
+            if self.graph.in_degree(i) == 0:
+                constant_agents.append(i)
+        self.polarization_history.append(self.pol(self.get_beliefs(),ignore_these_indexes=self.get_constant_agents()))
     def set_belief(self, i : int, val : float):
         if val > 1 or val < 0:
             raise ValueError("Invalid belief value.")
@@ -113,7 +117,11 @@ class Society_Graph:
             self.graph.nodes[n][BELIEF_VALUE] += sum/graph.in_degree(n)
             self.set_between_0_1(n)
         self.belief_history.append(self.get_beliefs())
-        self.polarization_history.append(self.pol(self.get_beliefs()))
+        constant_agents = []
+        for i in range(self.num_agents):
+            if self.graph.in_degree(i) == 0:
+                constant_agents.append(i)
+        self.polarization_history.append(self.pol(self.get_beliefs(),ignore_these_indexes=self.get_constant_agents()))
 
     def quick_update(self, number_of_updates):
         n = self.num_agents
@@ -136,7 +144,11 @@ class Society_Graph:
             preAns += blf_mat
             blf_mat = np.clip(preAns,0,1)
             self.belief_history.append(np.ndarray.tolist(blf_mat))
-            self.polarization_history.append(self.pol(np.ndarray.tolist(blf_mat)))
+            constant_agents = []
+            for i in range(self.num_agents):
+                if self.graph.in_degree(i) == 0:
+                    constant_agents.append(i)
+            self.polarization_history.append(self.pol(np.ndarray.tolist(blf_mat),ignore_these_indexes=self.get_constant_agents()))
         self.set_beliefs(np.ndarray.tolist(blf_mat))
 
     def plot_history(self):
@@ -159,8 +171,15 @@ class Society_Graph:
             self.set_influence(i+n,j+n,other[i][j][INFLUENCE_VALUE])
         self.num_agents = self.graph.number_of_nodes()
         self.belief_history = [self.get_beliefs()]
-        self.polarization_history = [self.pol(self.get_beliefs())]
+        self.polarization_history = [self.pol(self.get_beliefs(),ignore_these_indexes=self.get_constant_agents())]
         self.subsets += 1
+    
+    def get_constant_agents(self):
+        constant_agents = []
+        for i in range(self.num_agents):
+            if self.graph.in_degree(i) == 0:
+                constant_agents.append(i)
+        return constant_agents
     
     def draw_graph(self):
         nx.draw(self.graph)

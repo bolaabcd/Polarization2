@@ -217,3 +217,4 @@ plt.plot(x,y)
 plt.show()
 
 # It is bigger if all agents are in the middle!
+# This is why I added the idea that constant agents don't count for polarization.
