@@ -215,6 +215,8 @@ import os
 # xp = [[0,0.5-i,0.5+i,1] for i in x]
 # y = [pol_ER_discretized(i) for i in xp]
 # plt.plot(x,y)
+# plt.xlabel('i')
+# plt.ylabel('pol([0,0.5-i,0.5+i,1])')
 # plt.show()
 
 # # It is bigger if all agents are in the middle!

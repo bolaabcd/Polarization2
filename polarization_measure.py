@@ -87,8 +87,8 @@ def pol_ER_discretized(belief_state:list, ignore_these_indexes:list = [], alpha=
     """Discretize belief state as necessary for computing Esteban-Ray
     polarization and computes it.
     """
+    # ignore_these_indexes = []
     filtered_belief_state = [v for i ,v in enumerate(belief_state) if i not in ignore_these_indexes]
-    # belief_state = [belief_state[i] for i in range(1,len(belief_state)-1)]
     return pol_ER(belief_2_dist(filtered_belief_state, num_bins), alpha, K)
 
 def make_pol_er_discretized_func(alpha=ALPHA, K=K, num_bins=NUM_BINS):
