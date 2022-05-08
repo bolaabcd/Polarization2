@@ -228,7 +228,7 @@ name = "non_mon"
 gr = Society_Graph(
     100,
     [0.03+i/(100 - 1)*0.94 for i in range(100)],
-    build_influence(Default_Influence.CLIQUE,100,general_belief=0.5),
+    build_influence(Default_Influence.CLIQUE,100,general_influence=0.5),
     [-0.42 for i in range(100)],
     [f for i in range(100)]
 )
