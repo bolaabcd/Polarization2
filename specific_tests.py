@@ -223,42 +223,108 @@ import os
 # # This is why I added the idea that constant agents don't count for polarization.
 
 
-# Non-monotonicity of max^t and min^t
-f = quadratic_update
-name = "non_mon"
+# # Non-monotonicity of max^t and min^t
+# f = quadratic_update
+# name = "non_mon"
 
+# gr = Society_Graph(
+#     100,
+#     [0.03+i/(100 - 1)*0.94 for i in range(100)],
+#     build_influence(Default_Influence.CLIQUE,100,general_influence=0.5),
+#     [-0.42 for i in range(100)],
+#     [f for i in range(100)]
+# )
+# gr.quick_update(200)
+# plt.close()
+# gr.plot_history()
+# if not os.path.exists("generated/Quadratic/"+name):
+#     os.mkdir("generated/Quadratic/"+name)
+# plt.savefig("generated/Quadratic/"+name+'/ags.jpg')
+# # plt.show()
+# plt.close()
+# siz = len(gr.polarization_history)
+# plt.title(f"Final value = {gr.polarization_history[siz-1]}")
+# gr.plot_polarization()
+# plt.savefig("generated/Quadratic/"+name+'/pol.jpg')
+# # plt.show()
+# plt.close()
+# gr.draw_graph()
+# plt.savefig("generated/Quadratic/"+name+'/'+name+'.jpg')
+# # plt.show()
+# plt.close()
+# x = np.linspace(-1,1)
+# y = f(x,-0.42)
+# y = np.clip(y,-1,1)
+# plt.plot(x,y)
+# plt.plot(x,x)
+# plt.plot(x,np.zeros(x.shape))
+# plt.plot(np.zeros(y.shape),x)
+# plt.savefig("generated/Quadratic/"+name+'/f.jpg')
+# # plt.show()
+# plt.close()
+
+
+# necessity of x > 0
+def xgtzero(x,k):
+    k=0.5*k+0.5 # g(k)
+    
+    sigx = None
+    sig2 = None
+    if type(x) is float: 
+        sigx = -1
+        sig2 = -1
+        if x >= 0:
+            sigx = 1
+        if 1/2-abs(x) >= 0:
+            sig2 = 1
+    else:
+        sigx = np.copy(x)
+        sigx[sigx >= 0] = 1
+        sigx[sigx <  0] = -1
+        sig2 = np.copy(x)
+        sig2 = 1/2-np.abs(sig2)
+        sig2[sig2 >= 0] = 1
+        sig2[sig2 < 0] = -1
+
+
+
+    y = sigx*(-abs(abs(x)-k)+k)*sig2
+    return y*1/2
+f = xgtzero
+name = "x_greater_than_zero"
+nags = 2
 gr = Society_Graph(
-    100,
-    [0.03+i/(100 - 1)*0.94 for i in range(100)],
-    build_influence(Default_Influence.CLIQUE,100,general_influence=0.5),
-    [-0.42 for i in range(100)],
-    [f for i in range(100)]
+    nags,
+    [i/(nags-1) for i in range(nags)],
+    build_influence(Default_Influence.CLIQUE,nags,general_influence=1),
+    [-1/2 for i in range(nags)],
+    [f for i in range(nags)]
 )
-gr.quick_update(200)
+gr.quick_update(100)
 plt.close()
 gr.plot_history()
-if not os.path.exists("generated/Quadratic/"+name):
-    os.mkdir("generated/Quadratic/"+name)
-plt.savefig("generated/Quadratic/"+name+'/ags.jpg')
+if not os.path.exists("generated/"+name):
+    os.mkdir("generated/"+name)
+plt.savefig("generated/"+name+'/ags.jpg')
 # plt.show()
 plt.close()
 siz = len(gr.polarization_history)
 plt.title(f"Final value = {gr.polarization_history[siz-1]}")
 gr.plot_polarization()
-plt.savefig("generated/Quadratic/"+name+'/pol.jpg')
+plt.savefig("generated/"+name+'/pol.jpg')
 # plt.show()
 plt.close()
 gr.draw_graph()
-plt.savefig("generated/Quadratic/"+name+'/'+name+'.jpg')
+plt.savefig("generated/"+name+'/'+name+'.jpg')
 # plt.show()
 plt.close()
-x = np.linspace(-1,1)
-y = f(x,-0.42)
+x = np.linspace(-1,1,1000)
+y = f(x,-1/2)
 y = np.clip(y,-1,1)
 plt.plot(x,y)
 plt.plot(x,x)
 plt.plot(x,np.zeros(x.shape))
 plt.plot(np.zeros(y.shape),x)
-plt.savefig("generated/Quadratic/"+name+'/f.jpg')
+plt.savefig("generated/"+name+'/f.jpg')
 # plt.show()
 plt.close()
