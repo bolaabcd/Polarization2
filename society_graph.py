@@ -30,8 +30,11 @@ class Society_Graph:
         self.graph = nx.DiGraph()
         for i in range(num_agents):
             self.graph.add_node(i,subset = 0)
+        if type(initial_tolerance[0]) != type((1,1)):
+            initial_tolerance = zip(initial_tolerance, initial_tolerance)
         self.set_beliefs(initial_belief)
         self.set_influences(initial_influence)
+        # print(initial_tolerance)
         self.set_tolerances(initial_tolerance)
         self.set_fs(initial_fs)
         self.subsets = 1
@@ -87,15 +90,17 @@ class Society_Graph:
                 pass
     
     def set_tolerances(self, tolerance_list : list):
-        tolerance_list = list(tolerance_list)
-        if self.num_agents == len(tolerance_list):
-            tolerance_list = zip(tolerance_list,tolerance_list)
-        if 2*self.num_agents != len(tolerance_list):
+        if self.num_agents != len(tolerance_list):
             raise ValueError("Invalid size of tolerance list.")
         for i, val in enumerate(tolerance_list):
+            # print(val,'b')
             self.set_tolerance(i, val)
-    def set_tolerance(self, i : int, val : float):
-        if val < -1 or val > 1:
+    def set_tolerance(self, i : int, val : tuple):
+        # print(val, 'a')
+        if type(val) == type((0,0)):
+            if val[0] < -1 or val[0] > 1 or val[1] < -1 or val[1] > 1:
+                raise ValueError("Invalid tolerance value.")
+        else:
             raise ValueError("Invalid tolerance value.")
         self.graph.nodes[i][TOLERANCE_VALUE]  = val
     
@@ -134,11 +139,14 @@ class Society_Graph:
     def quick_update(self, number_of_updates):
         n = self.num_agents
         f0 = self.graph.nodes[0][UPDATE_F]
+        # print(self.graph.number_of_nodes())
         for i in range(self.graph.number_of_nodes()):
+            # print(i, self.graph.nodes[i])
             if self.graph.nodes[i][UPDATE_F] != f0:
                 raise RuntimeError("Invalid state for quick_update: not all agents use the same update function.")
         blf_mat = [self.graph.nodes[i][BELIEF_VALUE] for i in range(self.graph.number_of_nodes())]
         blf_mat = np.array(blf_mat)
+        # print([self.graph.nodes[i][TOLERANCE_VALUE] for i in range(self.graph.number_of_nodes())])
         tol_mat = np.full((n, n), 0) + np.array([self.graph.nodes[i][TOLERANCE_VALUE][self.backfire_effect]  for i in range(self.graph.number_of_nodes())])[np.newaxis,:]
         inf_mat = nx.convert_matrix.to_numpy_array(self.graph,weight=INFLUENCE_VALUE)
         neighbours = [np.count_nonzero(inf_mat[:, i]) for i, _ in enumerate(blf_mat)]
@@ -167,13 +175,13 @@ class Society_Graph:
 
     def append(self, other : DiGraph): # also accepts other as Society Graph
         if type(other) is Society_Graph:
-            other = other.graph
             assert(other.backfire_effect == self.backfire_effect)
+            other = other.graph
         n = self.graph.number_of_nodes()
         for i in range(other.number_of_nodes()):
             self.graph.add_node(i+n)
             self.set_belief(i+n,other.nodes[i][BELIEF_VALUE])
-            self.set_tolerance(i+n,other.nodes[i][TOLERANCE_VALUE][self.backfire_effect])
+            self.set_tolerance(i+n,other.nodes[i][TOLERANCE_VALUE])
             self.set_f(i+n,other.nodes[i][UPDATE_F])
             self.graph.nodes[i+n]['subset'] = self.subsets
         for i,j in other.edges():

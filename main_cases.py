@@ -60,17 +60,17 @@ def scientists_buffer(
 
     comunicators = Society_Graph(
         num_comunicators,
-        bel_scientists_distr[0](default_beliefs.Default_Belief.UNIFORM, num_scientists,*(bel_scientists_distr[1])),
+        bel_scientists_distr[0](default_beliefs.Default_Belief.UNIFORM, num_comunicators,*(bel_scientists_distr[1])),
         default_influences.build_inf_graph_clique(num_comunicators, inf_scientists_scientists),
         default_tolerances.build_tol_list_constant(num_comunicators, in_tol_scientists, out_tol_scientists),
         default_fs.same(num_comunicators,updt_scientists),
         backfire_effect
     )
-    size3 = num_scientists
+    size3 = num_comunicators
 
     others = Society_Graph(
         num_others,
-        bel_others_distr[0](*(bel_others_distr[1])),
+        bel_others_distr[0](default_beliefs.Default_Belief.UNIFORM, num_others, *(bel_others_distr[1])),
         default_influences.build_inf_graph_clique(num_others, inf_others_others),
         default_tolerances.build_tol_list_constant(num_others, in_tol_others, out_tol_others),
         default_fs.same(num_others,updt_others),
@@ -88,13 +88,15 @@ def scientists_buffer(
     # comunicators are also considered scientists here
     others_to_scientists = all_edges(range(size1+size2+size3, size1+size2+size3+size4), range(size1, size1+size2+size3))
 
-    result = truth_node.append(scientists)
-    result = result.append(comunicators)
-    result = result.append(others)
+    result = truth_node
+    result.append(scientists)
+    result.append(comunicators)
+    result.append(others)
     result.graph.add_edges_from(truth_to_scientists, inf = inf_truth)
     result.graph.add_edges_from(truth_to_comunicators, inf = inf_truth)
     result.graph.add_edges_from(scientists_to_comunicators, inf = inf_scientists_scientists)
     result.graph.add_edges_from(comunicators_to_scientists, inf = inf_scientists_scientists)
+    # print(result.graph.number_of_nodes(), 'a')
     result.graph.add_edges_from(comunicators_to_others, inf = inf_scientists_others)
     result.graph.add_edges_from(others_to_scientists, inf = inf_others_scientists)
 
