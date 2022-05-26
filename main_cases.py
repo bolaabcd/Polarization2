@@ -1,3 +1,4 @@
+import networkx as nx
 import numpy as np
 import os
 from matplotlib import pyplot as plt
@@ -87,6 +88,11 @@ def scientists_buffer(
     comunicators_to_others = all_edges(range(size1+size2, size1+size2+size3), range(size1+size2+size3, size1+size2+size3+size4))
     # comunicators are also considered scientists here
     others_to_scientists = all_edges(range(size1+size2+size3, size1+size2+size3+size4), range(size1, size1+size2+size3))
+
+    # nx.set_node_attributes(truth_node.graph,1,"subset")
+    # nx.set_node_attributes(scientists.graph,2,"subset")
+    # nx.set_node_attributes(comunicators.graph,3,"subset")
+    # nx.set_node_attributes(others.graph,4,"subset")
 
     result = truth_node
     result.append(scientists)

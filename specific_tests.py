@@ -361,7 +361,7 @@ gr = scientists_buffer(
     # # is this Backfire-Effect? (or is it Boomerang-Effect)
     True# backfire_effect = True
     )
-gr.quick_update(100)
+gr.quick_update(700)
 plt.close()
 gr.plot_history()
 if not os.path.exists("generated/"+name):
@@ -375,17 +375,49 @@ gr.plot_polarization()
 plt.savefig("generated/"+name+'/pol.jpg')
 # plt.show()
 plt.close()
-gr.draw_graph()
+red = (1,0,0)
+green = (0,1,0)
+blue = (0,0,1)
+orange = (1,0.5,0)
+lblue = (0,0.5,1)
+black = (0,0,0)
+r1 = range(1,11)
+r2 = range(11,14)
+r3 = range(14,34)
+# draw_networkx(
+#     gr.graph,
+#     node_color=[red]+[orange for i in r1]+[green for i in r2]+[blue for i in r3],
+#     with_labels=False,
+#     pos = nx.shell_layout(gr.graph,[[0],list(r2)+list(r1),list(r3)]),
+# )
+dic = multipartite_layout(gr.graph, subset_key = "subset")
+
+# # array_op = lambda x: [10*x[0], x[1]]
+# array_op = lambda x: np.array([x[0]*10, x[1]])
+# # array_op = lambda x: print(np.array(x[0]*2, x[1]))
+# # array_op = lambda x: np.array(x[0],x[1])
+# # array_op = lambda x: print(np.array([x[0],x[1]]))
+# print(dic)
+# dic = {p:array_op(dic[p]) for p in dic}
+# print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+# print(dic)
+
+print(gr.graph.number_of_edges())
+re1 = range(10)
+re2 = range(10, 14)
+re3 = range(14,30)
+re4 = range(30, gr.graph.number_of_edges())
+draw_networkx(
+    gr.graph,
+    node_color = [red]+[orange for i in r1]+[green for i in r2]+[blue for i in r3],
+    edge_color = [orange for i in re1] + [green for i in re2] + [blue for i in re4] + [blue for i in re3],
+    with_labels = False,
+    pos = multipartite_layout(gr.graph, subset_key = "subset"),
+    node_size = 30, # 300
+    arrowsize = 1, # 10
+    linewidths = 0.1 # 1.0
+)
+
 plt.savefig("generated/"+name+'/'+name+'.jpg')
-# plt.show()
-plt.close()
-x = np.linspace(-1,1,1000)
-y = f(x,-1/2)
-y = np.clip(y,-1,1)
-plt.plot(x,y)
-plt.plot(x,x)
-plt.plot(x,np.zeros(x.shape))
-plt.plot(np.zeros(y.shape),x)
-plt.savefig("generated/"+name+'/f.jpg')
 # plt.show()
 plt.close()
