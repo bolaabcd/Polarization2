@@ -1,14 +1,16 @@
-from sqlalchemy import false
-from society_graph import Society_Graph
-import numpy as np
-from belief_update_fs import quadratic_update, cubic_update, modulus_update
 import matplotlib.pyplot as plt
-from example_cases import simple_clique_uniform, all_edges
-from networkx.drawing import draw_networkx,multipartite_layout
 import networkx as nx
-from default_influences import build_influence, Default_Influence
+import numpy as np
 import os
+from networkx.drawing import draw_networkx,multipartite_layout
+from sqlalchemy import false
 
+from belief_update_fs import quadratic_update, cubic_update, modulus_update
+from default_beliefs import build_belief, Default_Belief
+from default_influences import build_influence, Default_Influence
+from example_cases import simple_clique_uniform, all_edges
+from society_graph import Society_Graph
+from main_cases import scientists_buffer
 
 # # Counter-example to show that varying functions and keeping the trigger point can vary
 # # the final result (even consensus x not consensus)
@@ -264,42 +266,101 @@ import os
 # plt.close()
 
 
-# necessity of x > 0
-def xgtzero(x,k):
-    k=0.5*k+0.5 # g(k)
+# # necessity of x > 0
+# def xgtzero(x,k):
+#     k=0.5*k+0.5 # g(k)
     
-    sigx = None
-    sig2 = None
-    if type(x) is float: 
-        sigx = -1
-        sig2 = -1
-        if x >= 0:
-            sigx = 1
-        if 1/2-abs(x) >= 0:
-            sig2 = 1
-    else:
-        sigx = np.copy(x)
-        sigx[sigx >= 0] = 1
-        sigx[sigx <  0] = -1
-        sig2 = np.copy(x)
-        sig2 = 1/2-np.abs(sig2)
-        sig2[sig2 >= 0] = 1
-        sig2[sig2 < 0] = -1
+#     sigx = None
+#     sig2 = None
+#     if type(x) is float: 
+#         sigx = -1
+#         sig2 = -1
+#         if x >= 0:
+#             sigx = 1
+#         if 1/2-abs(x) >= 0:
+#             sig2 = 1
+#     else:
+#         sigx = np.copy(x)
+#         sigx[sigx >= 0] = 1
+#         sigx[sigx <  0] = -1
+#         sig2 = np.copy(x)
+#         sig2 = 1/2-np.abs(sig2)
+#         sig2[sig2 >= 0] = 1
+#         sig2[sig2 < 0] = -1
 
 
 
-    y = sigx*(-abs(abs(x)-k)+k)*sig2
-    return y*1/2
-f = xgtzero
-name = "x_greater_than_zero"
-nags = 2
-gr = Society_Graph(
-    nags,
-    [i/(nags-1) for i in range(nags)],
-    build_influence(Default_Influence.CLIQUE,nags,general_influence=1),
-    [-1/2 for i in range(nags)],
-    [f for i in range(nags)]
-)
+#     y = sigx*(-abs(abs(x)-k)+k)*sig2
+#     return y*1/2
+# f = xgtzero
+# name = "x_greater_than_zero"
+# nags = 2
+# gr = Society_Graph(
+#     nags,
+#     [i/(nags-1) for i in range(nags)],
+#     build_influence(Default_Influence.CLIQUE,nags,general_influence=1),
+#     [-1/2 for i in range(nags)],
+#     [f for i in range(nags)]
+# )
+# gr.quick_update(100)
+# plt.close()
+# gr.plot_history()
+# if not os.path.exists("generated/"+name):
+#     os.mkdir("generated/"+name)
+# plt.savefig("generated/"+name+'/ags.jpg')
+# # plt.show()
+# plt.close()
+# siz = len(gr.polarization_history)
+# plt.title(f"Final value = {gr.polarization_history[siz-1]}")
+# gr.plot_polarization()
+# plt.savefig("generated/"+name+'/pol.jpg')
+# # plt.show()
+# plt.close()
+# gr.draw_graph()
+# plt.savefig("generated/"+name+'/'+name+'.jpg')
+# # plt.show()
+# plt.close()
+# x = np.linspace(-1,1,1000)
+# y = f(x,-1/2)
+# y = np.clip(y,-1,1)
+# plt.plot(x,y)
+# plt.plot(x,x)
+# plt.plot(x,np.zeros(x.shape))
+# plt.plot(np.zeros(y.shape),x)
+# plt.savefig("generated/"+name+'/f.jpg')
+# # plt.show()
+# plt.close()
+
+f = quadratic_update
+name = "scientists_buffer"
+gr = scientists_buffer(
+    # # ammount of each class (1 truth always)
+    10,# num_scientists,
+    3,# num_comunicators, # extra scientists
+    20,# num_others,
+    # # influence values
+    1,# inf_truth,
+    0.5,# inf_scientists_scientists,
+    0.2,# inf_scientists_others,
+    0.1,# inf_others_scientists,
+    0.3,# inf_others_others,
+    # # update functions
+    f,# updt_truth,
+    f,# updt_scientists,
+    f,# updt_others
+    # # tolerance values
+    1,# out_tol_truth,
+    1,# in_tol_scientists,
+    1,# out_tol_scientists,
+    1,# in_tol_others,
+    1,# out_tol_others,
+    # # belief values
+    (build_belief, (3/5,1)),# bel_scientists_distr,
+    (build_belief, (0,1/4)),# bel_others_distr,
+    1,# bel_truth = 1.0,
+    # # is this Backfire-Effect? (or is it Boomerang-Effect)
+    True# backfire_effect = True
+    )
 gr.quick_update(100)
 plt.close()
 gr.plot_history()

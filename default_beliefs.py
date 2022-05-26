@@ -19,13 +19,15 @@ class Default_Belief(Enum):
     TRIPLE = 3
     RANDOM = 4
 
-def build_belief(belief_type: Default_Belief, num_agents : int):
+def build_belief(belief_type: Default_Belief, num_agents : int, initval: float = 0, finval: float = 1):
+    assert(finval >= initval)
+    dif = finval-initval
     if belief_type is Default_Belief.MILD:
         middle = math.ceil(num_agents / 2)
-        return [0.2 + 0.2 * i / middle if i < middle else 0.6 + 0.2 * (i - middle) / (num_agents - middle) for i in range(num_agents)]
+        return [initval+dif*(0.2 + 0.2 * i / middle) if i < middle else initval+dif*(0.6 + 0.2 * (i - middle) / (num_agents - middle)) for i in range(num_agents)]
     if belief_type is Default_Belief.EXTREME:
         middle = math.ceil(num_agents / 2)
-        return [0.2 * i / middle if i < middle else 0.8 + 0.2 * (i - middle) / (num_agents - middle) for i in range(num_agents)]
+        return [initval + dif*(0.2 * i / middle) if i < middle else initval+dif*(0.8 + 0.2 * (i - middle) / (num_agents - middle)) for i in range(num_agents)]
     if belief_type is Default_Belief.TRIPLE:
         beliefs = [0.0] * num_agents
         first_third = num_agents // 3
@@ -34,10 +36,10 @@ def build_belief(belief_type: Default_Belief, num_agents : int):
         offset = 0
         for i, segment in enumerate((first_third, middle_third, last_third)):
             for j in range(segment):
-                beliefs[j+offset] = 0.2 * j / segment + (0.4 * i)
+                beliefs[j+offset] = initval+dif*(0.2 * j / segment + (0.4 * i))
             offset += segment
         return beliefs
     if belief_type is Default_Belief.UNIFORM:
-        return [i/(num_agents - 1) for i in range(num_agents)]
+        return [initval+dif*(i/(num_agents - 1)) for i in range(num_agents)]
     if belief_type is Default_Belief.RANDOM:
-        return np.ndarray.tolist(np.random.uniform(0,1,num_agents))
+        return np.ndarray.tolist(np.random.uniform(initval,finval,num_agents))
