@@ -360,20 +360,20 @@ gr = scientists_buffer(
     1,# bel_truth = 1.0,
     # # is this Backfire-Effect? (or is it Boomerang-Effect)
     True,# backfire_effect = True,
-    False#comunicators_are_scientists
+    False#comunicators_see_truth
     )
 gr.quick_update(250)
 plt.close()
 gr.plot_history()
 if not os.path.exists("generated/"+name):
     os.mkdir("generated/"+name)
-plt.savefig("generated/"+name+'/ags.jpg')
+plt.savefig("generated/"+name+'/ags_specific.jpg')
 # plt.show()
 plt.close()
 siz = len(gr.polarization_history)
 plt.title(f"Final value = {gr.polarization_history[siz-1]}")
 gr.plot_polarization()
-plt.savefig("generated/"+name+'/pol.jpg')
+plt.savefig("generated/"+name+'/pol_specific.jpg')
 # plt.show()
 plt.close()
 red = (1,0,0)
@@ -412,6 +412,6 @@ draw_networkx(
     linewidths = 1 # 1.0
 )
 
-plt.savefig("generated/"+name+'/'+name+'.jpg')
+plt.savefig("generated/"+name+'/'+name+'_specific.jpg')
 # plt.show()
 plt.close()

@@ -38,8 +38,8 @@ def scientists_buffer(
         bel_truth = 1.0,
         # is this Backfire-Effect? (or is it Boomerang-Effect)
         backfire_effect = True,
-        # are comunicators also scientists? (do they get influence from the truth?)
-        comunicators_are_scientists = False,
+        # do comunicators get influence from the truth?
+        comunicators_see_truth = False,
     ):
     truth_node = Society_Graph(
         1,
@@ -98,14 +98,13 @@ def scientists_buffer(
     # nx.set_node_attributes(scientists.graph,2,"subset")
     # nx.set_node_attributes(comunicators.graph,3,"subset")
     # nx.set_node_attributes(others.graph,4,"subset")
-
     result = truth_node
     result.append(scientists)
     result.append(comunicators)
     result.append(others)
     if inf_truth != 0:
         result.graph.add_edges_from(truth_to_scientists, inf = inf_truth, edge_color = 'tab:red')
-        if comunicators_are_scientists:
+        if comunicators_see_truth:
             result.graph.add_edges_from(truth_to_comunicators, inf = inf_truth, edge_color = 'tab:red')
     if inf_scientists_scientists != 0:
         result.graph.add_edges_from(scientists_to_comunicators, inf = inf_scientists_scientists, edge_color = 'tab:orange')

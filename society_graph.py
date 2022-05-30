@@ -113,8 +113,12 @@ class Society_Graph:
             graph = self.graph
         f = graph.nodes[n][UPDATE_F]
         diff = graph.nodes[nbr][BELIEF_VALUE] - graph.nodes[n][BELIEF_VALUE]
-        tol = graph.nodes[n][TOLERANCE_VALUE][self.backfire_effect]
-        return f(diff,tol) # x, k
+        if self.backfire_effect == 0:
+            tol = graph.nodes[n][TOLERANCE_VALUE][0]
+            return f(diff,tol) # x, k
+        else:
+            tol = graph.nodes[nbr][TOLERANCE_VALUE][1]
+            return f(diff,tol) # x,k
         
     def set_between_0_1(self, n : int):
         self.graph.nodes[n][BELIEF_VALUE] = max(0,self.graph.nodes[n][BELIEF_VALUE])
@@ -151,7 +155,9 @@ class Society_Graph:
         blf_mat = [self.graph.nodes[i][BELIEF_VALUE] for i in range(self.graph.number_of_nodes())]
         blf_mat = np.array(blf_mat)
         # print([self.graph.nodes[i][TOLERANCE_VALUE] for i in range(self.graph.number_of_nodes())])
-        tol_mat = np.full((n, n), 0) + np.array([self.graph.nodes[i][TOLERANCE_VALUE][self.backfire_effect]  for i in range(self.graph.number_of_nodes())])[np.newaxis,:]
+        tol_mat = np.full((n, n), 0) + np.array([self.graph.nodes[i][TOLERANCE_VALUE][0]  for i in range(self.graph.number_of_nodes())])[np.newaxis,:]
+        if self.backfire_effect == 0:
+            tol_mat = tol_mat.T
         inf_mat = nx.convert_matrix.to_numpy_array(self.graph,weight=INFLUENCE_VALUE)
         neighbours = [np.count_nonzero(inf_mat[:, i]) for i, _ in enumerate(blf_mat)]
 
@@ -203,4 +209,8 @@ class Society_Graph:
         return constant_agents
     
     def draw_graph(self):
-        nx.draw(self.graph)
+        nx.draw(
+            self.graph, 
+            node_color = [self.graph.nodes[i]["node_color"] for i in self.graph.nodes],
+            edge_color = [self.graph.edges[i]["edge_color"] for i in self.graph.edges]
+        )
