@@ -100,3 +100,13 @@ def make_pol_er_discretized_func(alpha=ALPHA, K=K, num_bins=NUM_BINS):
     _pol_ER_discretized.__name__ = pol_ER_discretized.__name__
     _pol_ER_discretized.__doc__ = pol_ER_discretized.__doc__
     return _pol_ER_discretized
+
+
+######################################################
+## Extra
+######################################################
+
+def get_max_pol(number_of_agents):
+    elements1 = [0 for i in range(number_of_agents//2)] + [1 for i in range(number_of_agents//2 + number_of_agents%2)]
+    elements2 = [0 for i in range(number_of_agents//2 + number_of_agents%2)] + [1 for i in range(number_of_agents//2)]
+    return max(pol_ER_discretized(elements1),pol_ER_discretized(elements2))

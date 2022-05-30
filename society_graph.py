@@ -4,7 +4,7 @@ from networkx.exception import NetworkXError
 import numpy as np
 import matplotlib.pyplot as plt
 import networkx as nx
-from polarization_measure import pol_ER_discretized
+from polarization_measure import pol_ER_discretized, get_max_pol
 
 BELIEF_VALUE = "blf"
 INFLUENCE_VALUE = "inf"
@@ -24,6 +24,7 @@ class Society_Graph:
         backfire_effect: bool = True, # False means boomerang effect
         node_color : str = "tab:blue",
         edge_color : str = "tab:gray",
+        see_constant_agents: bool = True
         ):
         self.belief_history = []
         self.polarization_history = []
@@ -36,6 +37,7 @@ class Society_Graph:
             self.graph.add_node(i,subset = 0, node_color = node_color)
         if type(initial_tolerance[0]) != type((1,1)):
             initial_tolerance = zip(initial_tolerance, initial_tolerance)
+        self.see_constant_agents = see_constant_agents
         self.set_beliefs(initial_belief)
         self.set_influences(initial_influence)
         # print(initial_tolerance)
@@ -60,12 +62,12 @@ class Society_Graph:
             raise ValueError("Invalid size of belief list.")
         for i, val in enumerate(belief_list):
             self.set_belief(i, val)
-        self.belief_history.append(self.get_beliefs())
+        self.belief_history.append(list(np.array(self.get_beliefs())[self.get_valid_agents()]))
         constant_agents = []
         for i in range(self.num_agents):
             if self.graph.in_degree(i) == 0:
                 constant_agents.append(i)
-        self.polarization_history.append(self.pol(self.get_beliefs(),ignore_these_indexes=self.get_constant_agents()))
+        self.polarization_history.append(self.pol(self.get_beliefs(),ignore_these_indexes=self.get_constant_agents())/get_max_pol(self.num_agents-len(self.get_constant_agents())))
     def set_belief(self, i : int, val : float):
         if val > 1 or val < 0:
             raise ValueError("Invalid belief value.")
@@ -137,12 +139,13 @@ class Society_Graph:
                 sum += self.apply_f(nbr,n,graph)*graph[nbr][n][INFLUENCE_VALUE]
             self.graph.nodes[n][BELIEF_VALUE] += sum/graph.in_degree(n)
             self.set_between_0_1(n)
-        self.belief_history.append(self.get_beliefs())
+        valids = self.get_valid_agents()
+        self.belief_history.append(list(np.array(self.get_beliefs())[valids]))
         constant_agents = []
         for i in range(self.num_agents):
             if self.graph.in_degree(i) == 0:
                 constant_agents.append(i)
-        self.polarization_history.append(self.pol(self.get_beliefs(),ignore_these_indexes=self.get_constant_agents()))
+        self.polarization_history.append(self.pol(self.get_beliefs(),ignore_these_indexes=self.get_constant_agents())/get_max_pol(self.num_agents-len(self.get_constant_agents())))
 
     def quick_update(self, number_of_updates):
         n = self.num_agents
@@ -160,7 +163,7 @@ class Society_Graph:
             tol_mat = tol_mat.T
         inf_mat = nx.convert_matrix.to_numpy_array(self.graph,weight=INFLUENCE_VALUE)
         neighbours = [np.count_nonzero(inf_mat[:, i]) for i, _ in enumerate(blf_mat)]
-
+        valids = self.get_valid_agents()
         for i in range(number_of_updates):
             diff = np.ones((len(blf_mat), 1)) @  np.asarray(blf_mat)[np.newaxis]
             diff = np.transpose(diff) - diff
@@ -169,15 +172,22 @@ class Society_Graph:
             preAns = np.nan_to_num(preAns)
             preAns += blf_mat
             blf_mat = np.clip(preAns,0,1)
-            self.belief_history.append(np.ndarray.tolist(blf_mat))
+            self.belief_history.append(np.ndarray.tolist(blf_mat[valids]))
             constant_agents = []
             for i in range(self.num_agents):
                 if self.graph.in_degree(i) == 0:
                     constant_agents.append(i)
-            self.polarization_history.append(self.pol(np.ndarray.tolist(blf_mat),ignore_these_indexes=self.get_constant_agents()))
+            self.polarization_history.append(self.pol(np.ndarray.tolist(blf_mat),ignore_these_indexes=self.get_constant_agents())/get_max_pol(self.num_agents-len(self.get_constant_agents())))
         self.set_beliefs(np.ndarray.tolist(blf_mat))
-
+    def get_valid_agents(self):
+        valids = [True for i in range(self.num_agents)]
+        if self.see_constant_agents:
+            return valids
+        for i in self.get_constant_agents():
+            valids[i] = False
+        return valids
     def plot_history(self):
+        # print(self.belief_history)
         plt.plot(self.belief_history)
     
     def plot_polarization(self):
@@ -197,8 +207,8 @@ class Society_Graph:
         for i,j in other.edges():
             self.set_influence(i+n,j+n,other[i][j][INFLUENCE_VALUE], other[i][j]["edge_color"])
         self.num_agents = self.graph.number_of_nodes()
-        self.belief_history = [self.get_beliefs()]
-        self.polarization_history = [self.pol(self.get_beliefs(),ignore_these_indexes=self.get_constant_agents())]
+        self.belief_history = [list(np.array(self.get_beliefs())[self.get_valid_agents()])]
+        self.polarization_history = [self.pol(self.get_beliefs(),ignore_these_indexes=self.get_constant_agents())/get_max_pol(self.num_agents-len(self.get_constant_agents()))]
         self.subsets += 1
     
     def get_constant_agents(self):

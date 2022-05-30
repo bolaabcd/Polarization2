@@ -39,13 +39,23 @@ def simple_clique_uniform(
         end_value, 
         tolerance_value,
         influence_value,
+        is_backfire = True,
+        node_color : str = "tab:blue",
+        edge_color : str = "tab:gray",
+        ignore_constant : bool = False
     ):
+        if type(tolerance_value) != type((0,0)):
+            tolerance_value = (tolerance_value, tolerance_value)
         return Society_Graph(
             num_agents,
             np.array([start_value+(end_value-start_value)*i/(num_agents-1) for i in range(num_agents)]),
             default_influences.build_inf_graph_clique(num_agents,influence_value),
-            default_tolerances.build_tol_list_constant(num_agents,tolerance_value),
-            default_fs.same(num_agents,function)
+            default_tolerances.build_tol_list_constant(num_agents,tolerance_value[0], tolerance_value[1]),
+            default_fs.same(num_agents,function),
+            is_backfire,
+            node_color,
+            edge_color,
+            not ignore_constant
         )
 
 # Clique but agents are divided in three opinion groups
@@ -421,5 +431,7 @@ def simulate(graph):
             if not os.path.exists(file_name):
                 os.mkdir(file_name)
             if not os.path.exists(file_name+f"{j}.png"):
+                plt.xlim([0,len(Gr[i][0][j].polarization_history)-1])
+                plt.ylim([ 0,1])
                 plt.savefig(file_name+f"{j}.png")
             plt.close()
