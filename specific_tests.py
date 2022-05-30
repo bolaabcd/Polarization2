@@ -342,7 +342,7 @@ gr = scientists_buffer(
     1,# inf_truth,
     0.5,# inf_scientists_scientists,
     0.2,# inf_scientists_others,
-    0.1,# inf_others_scientists,
+    0.0,# inf_others_scientists,
     0.3,# inf_others_others,
     # # update functions
     f,# updt_truth,
@@ -359,9 +359,10 @@ gr = scientists_buffer(
     (build_belief, (0,1/4)),# bel_others_distr,
     1,# bel_truth = 1.0,
     # # is this Backfire-Effect? (or is it Boomerang-Effect)
-    True# backfire_effect = True
+    True,# backfire_effect = True,
+    False#comunicators_are_scientists
     )
-gr.quick_update(700)
+gr.quick_update(250)
 plt.close()
 gr.plot_history()
 if not os.path.exists("generated/"+name):
@@ -392,15 +393,6 @@ r3 = range(14,34)
 # )
 dic = multipartite_layout(gr.graph, subset_key = "subset")
 
-# # array_op = lambda x: [10*x[0], x[1]]
-# array_op = lambda x: np.array([x[0]*10, x[1]])
-# # array_op = lambda x: print(np.array(x[0]*2, x[1]))
-# # array_op = lambda x: np.array(x[0],x[1])
-# # array_op = lambda x: print(np.array([x[0],x[1]]))
-# print(dic)
-# dic = {p:array_op(dic[p]) for p in dic}
-# print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-# print(dic)
 
 print(gr.graph.number_of_edges())
 re1 = range(10)
@@ -409,13 +401,15 @@ re3 = range(14,30)
 re4 = range(30, gr.graph.number_of_edges())
 draw_networkx(
     gr.graph,
-    node_color = [red]+[orange for i in r1]+[green for i in r2]+[blue for i in r3],
-    edge_color = [orange for i in re1] + [green for i in re2] + [blue for i in re4] + [blue for i in re3],
+    # node_color = [red]+[orange for i in r1]+[green for i in r2]+[blue for i in r3],
+    node_color = [gr.graph.nodes[i]["node_color"] for i in gr.graph.nodes],
+    #edge_color = [orange for i in re1] + [green for i in re2] + [blue for i in re4] + [blue for i in re3],
+    edge_color = [gr.graph.edges[i]["edge_color"] for i in gr.graph.edges],
     with_labels = False,
-    pos = multipartite_layout(gr.graph, subset_key = "subset"),
-    node_size = 30, # 300
-    arrowsize = 1, # 10
-    linewidths = 0.1 # 1.0
+    pos = nx.drawing.kamada_kawai_layout(gr.graph),#multipartite_layout(gr.graph, subset_key = "subset"),
+    node_size = 300, # 300
+    arrowsize = 10, # 10
+    linewidths = 1 # 1.0
 )
 
 plt.savefig("generated/"+name+'/'+name+'.jpg')

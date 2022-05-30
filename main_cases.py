@@ -37,7 +37,9 @@ def scientists_buffer(
         bel_others_distr,
         bel_truth = 1.0,
         # is this Backfire-Effect? (or is it Boomerang-Effect)
-        backfire_effect = True
+        backfire_effect = True,
+        # are comunicators also scientists? (do they get influence from the truth?)
+        comunicators_are_scientists = False,
     ):
     truth_node = Society_Graph(
         1,
@@ -45,7 +47,8 @@ def scientists_buffer(
         np.full((1,1),0),
         [(1,out_tol_truth)], 
         default_fs.same(1,updt_truth),
-        backfire_effect
+        backfire_effect,
+        "tab:red"
     )
     size1 = 1
     
@@ -55,7 +58,8 @@ def scientists_buffer(
         default_influences.build_inf_graph_clique(num_scientists, inf_scientists_scientists),
         default_tolerances.build_tol_list_constant(num_scientists, in_tol_scientists, out_tol_scientists),
         default_fs.same(num_scientists,updt_scientists),
-        backfire_effect
+        backfire_effect,
+        "tab:orange"
     )
     size2 = num_scientists
 
@@ -65,7 +69,8 @@ def scientists_buffer(
         default_influences.build_inf_graph_clique(num_comunicators, inf_scientists_scientists),
         default_tolerances.build_tol_list_constant(num_comunicators, in_tol_scientists, out_tol_scientists),
         default_fs.same(num_comunicators,updt_scientists),
-        backfire_effect
+        backfire_effect,
+        "tab:green"
     )
     size3 = num_comunicators
 
@@ -98,12 +103,17 @@ def scientists_buffer(
     result.append(scientists)
     result.append(comunicators)
     result.append(others)
-    result.graph.add_edges_from(truth_to_scientists, inf = inf_truth)
-    result.graph.add_edges_from(truth_to_comunicators, inf = inf_truth)
-    result.graph.add_edges_from(scientists_to_comunicators, inf = inf_scientists_scientists)
-    result.graph.add_edges_from(comunicators_to_scientists, inf = inf_scientists_scientists)
+    if inf_truth != 0:
+        result.graph.add_edges_from(truth_to_scientists, inf = inf_truth, edge_color = 'tab:red')
+        if comunicators_are_scientists:
+            result.graph.add_edges_from(truth_to_comunicators, inf = inf_truth, edge_color = 'tab:red')
+    if inf_scientists_scientists != 0:
+        result.graph.add_edges_from(scientists_to_comunicators, inf = inf_scientists_scientists, edge_color = 'tab:orange')
+        result.graph.add_edges_from(comunicators_to_scientists, inf = inf_scientists_scientists, edge_color = 'tab:green')
     # print(result.graph.number_of_nodes(), 'a')
-    result.graph.add_edges_from(comunicators_to_others, inf = inf_scientists_others)
-    result.graph.add_edges_from(others_to_scientists, inf = inf_others_scientists)
+    if inf_scientists_others != 0:
+        result.graph.add_edges_from(comunicators_to_others, inf = inf_scientists_others, edge_color = 'tab:green')
+    if inf_others_scientists != 0:
+        result.graph.add_edges_from(others_to_scientists, inf = inf_others_scientists, edge_color = 'tab:blue')
 
     return result

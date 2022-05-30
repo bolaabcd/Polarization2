@@ -21,15 +21,19 @@ class Society_Graph:
         initial_influence : np.ndarray,
         initial_tolerance : list,
         initial_fs : list,
-        backfire_effect: bool = True # False significa boomerang effect
+        backfire_effect: bool = True, # False means boomerang effect
+        node_color : str = "tab:blue",
+        edge_color : str = "tab:gray",
         ):
         self.belief_history = []
         self.polarization_history = []
         self.pol = pol_ER_discretized
         self.num_agents = num_agents
         self.graph = nx.DiGraph()
+        self.node_color = node_color
+        self.edge_color = edge_color
         for i in range(num_agents):
-            self.graph.add_node(i,subset = 0)
+            self.graph.add_node(i,subset = 0, node_color = node_color)
         if type(initial_tolerance[0]) != type((1,1)):
             initial_tolerance = zip(initial_tolerance, initial_tolerance)
         self.set_beliefs(initial_belief)
@@ -75,13 +79,13 @@ class Society_Graph:
         
         for i in range(influence_matrix.shape[0]):
             for j in range(influence_matrix.shape[1]):
-                self.set_influence(i,j,influence_matrix[i][j])
-    def set_influence(self, i : int, j : int, val : float):
+                self.set_influence(i,j,influence_matrix[i][j], self.edge_color)
+    def set_influence(self, i : int, j : int, val : float, color : str):
         if val < 0 or val > 1:
             raise ValueError("Invalid influence value.")
         if val != 0:
             if not self.graph.has_edge(i,j):
-                self.graph.add_edge(i,j)
+                self.graph.add_edge(i,j, edge_color = color)
             self.graph[i][j][INFLUENCE_VALUE] = val
         else:
             try:
@@ -179,13 +183,13 @@ class Society_Graph:
             other = other.graph
         n = self.graph.number_of_nodes()
         for i in range(other.number_of_nodes()):
-            self.graph.add_node(i+n)
+            self.graph.add_node(i+n, node_color = other.nodes[i]["node_color"])
             self.set_belief(i+n,other.nodes[i][BELIEF_VALUE])
             self.set_tolerance(i+n,other.nodes[i][TOLERANCE_VALUE])
             self.set_f(i+n,other.nodes[i][UPDATE_F])
             self.graph.nodes[i+n]['subset'] = self.subsets
         for i,j in other.edges():
-            self.set_influence(i+n,j+n,other[i][j][INFLUENCE_VALUE])
+            self.set_influence(i+n,j+n,other[i][j][INFLUENCE_VALUE], other[i][j]["edge_color"])
         self.num_agents = self.graph.number_of_nodes()
         self.belief_history = [self.get_beliefs()]
         self.polarization_history = [self.pol(self.get_beliefs(),ignore_these_indexes=self.get_constant_agents())]
