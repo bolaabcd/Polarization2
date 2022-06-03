@@ -10,7 +10,7 @@ from default_beliefs import build_belief, Default_Belief
 from default_influences import build_influence, Default_Influence
 from example_cases import simple_clique_uniform, all_edges
 from society_graph import Society_Graph
-from main_cases import scientists_buffer, many_sides
+from main_cases import scientists_buffer
 
 # # Counter-example to show that varying functions and keeping the trigger point can vary
 # # the final result (even consensus x not consensus)
@@ -298,8 +298,8 @@ from main_cases import scientists_buffer, many_sides
 # gr = Society_Graph(
 #     nags,
 #     [i/(nags-1) for i in range(nags)],
-#     build_influence(Default_Influence.CLIQUE,nags,general_influence=1),
-#     [-1/2 for i in range(nags)],
+#     build_influence(Default_Influence.CLIQUE,nags,general_influence=1,diagonal_value=1),
+#     [(-1/2,-1/2) for i in range(nags)],
 #     [f for i in range(nags)]
 # )
 # gr.quick_update(100)
@@ -331,132 +331,52 @@ from main_cases import scientists_buffer, many_sides
 # # plt.show()
 # plt.close()
 
-
-# # scientists buffer
-# f = quadratic_update
-# name = "scientists_buffer"
-# gr = scientists_buffer(
-#     # # ammount of each class (1 truth always)
-#     10,# num_scientists,
-#     3,# num_comunicators, # extra scientists
-#     20,# num_others,
-#     # # influence values
-#     1,# inf_truth,
-#     0.5,# inf_scientists_scientists,
-#     0.2,# inf_scientists_others,
-#     0.0,# inf_others_scientists,
-#     0.3,# inf_others_others,
-#     # # update functions
-#     f,# updt_truth,
-#     f,# updt_scientists,
-#     f,# updt_others
-#     # # tolerance values
-#     1,# out_tol_truth,
-#     1,# in_tol_scientists,
-#     1,# out_tol_scientists,
-#     1,# in_tol_others,
-#     1,# out_tol_others,
-#     # # belief values
-#     (build_belief, (3/5,1)),# bel_scientists_distr,
-#     (build_belief, (0,1/4)),# bel_others_distr,
-#     1,# bel_truth = 1.0,
-#     # # is this Backfire-Effect? (or is it Boomerang-Effect)
-#     True,# backfire_effect = True,
-#     False#comunicators_see_truth
-#     )
-# gr.quick_update(250)
-# plt.close()
-# gr.plot_history()
-# if not os.path.exists("generated/"+name):
-#     os.mkdir("generated/"+name)
-# plt.savefig("generated/"+name+'/ags_specific.jpg')
-# # plt.show()
-# plt.close()
-# siz = len(gr.polarization_history)
-# plt.title(f"Final value = {gr.polarization_history[siz-1]}")
-# gr.plot_polarization()
-# plt.savefig("generated/"+name+'/pol_specific.jpg')
-# # plt.show()
-# plt.close()
-# red = (1,0,0)
-# green = (0,1,0)
-# blue = (0,0,1)
-# orange = (1,0.5,0)
-# lblue = (0,0.5,1)
-# black = (0,0,0)
-# r1 = range(1,11)
-# r2 = range(11,14)
-# r3 = range(14,34)
-# # draw_networkx(
-# #     gr.graph,
-# #     node_color=[red]+[orange for i in r1]+[green for i in r2]+[blue for i in r3],
-# #     with_labels=False,
-# #     pos = nx.shell_layout(gr.graph,[[0],list(r2)+list(r1),list(r3)]),
-# # )
-# dic = multipartite_layout(gr.graph, subset_key = "subset")
-
-
-# print(gr.graph.number_of_edges())
-# re1 = range(10)
-# re2 = range(10, 14)
-# re3 = range(14,30)
-# re4 = range(30, gr.graph.number_of_edges())
-# draw_networkx(
-#     gr.graph,
-#     # node_color = [red]+[orange for i in r1]+[green for i in r2]+[blue for i in r3],
-#     node_color = [gr.graph.nodes[i]["node_color"] for i in gr.graph.nodes],
-#     #edge_color = [orange for i in re1] + [green for i in re2] + [blue for i in re4] + [blue for i in re3],
-#     edge_color = [gr.graph.edges[i]["edge_color"] for i in gr.graph.edges],
-#     with_labels = False,
-#     pos = nx.drawing.kamada_kawai_layout(gr.graph),#multipartite_layout(gr.graph, subset_key = "subset"),
-#     node_size = 300, # 300
-#     arrowsize = 10, # 10
-#     linewidths = 1 # 1.0
-# )
-
-# plt.savefig("generated/"+name+'/'+name+'_specific.jpg')
-# # plt.show()
-# plt.close()
-
-
-# many sides
+nsc = 3#10
+ncom = 2#3
+num = 5#20
 f = quadratic_update
-name = "many_sides"
-gr = many_sides(
-    ## number of sides, agents initially defending sides and neutral agents
-    3,#num_sides,
-    [2 for i in range(3)],#num_agents_sides,
-    10,#num_neutral_agents,
-    ## influences from the sides to agents, and from agent to agent
-    1,#influences_sides_agent,
-    1,#influence_agent_agent,
-    ## update function
-    f,#agent_update,
-    ## tolerances
-    1,#in_tolerance_agent,
-    1,#out_tolerance_agent,
-    1,#out_tolerance_sides,
-    ## value of agent defend side is side_value +- side_diff
-    0.1,#side_diff,
-    ## interval of belief values of neutral agents
-    0.3,#neutral_low = 0,
-    0.7,#neutral_high = 1,
-    ## will we use backfire-effect? (or boomerang effect?)
-    True#is_backfire = True
+name = "scientists_buffer"
+gr = scientists_buffer(
+    # # ammount of each class (1 truth always)
+    nsc,# num_scientists,
+    ncom,# num_comunicators, # extra scientists
+    num,# num_others,
+    # # influence values
+    1,# inf_truth,
+    0.5,# inf_scientists_scientists,
+    0.2,# inf_scientists_others,
+    0.1,# inf_others_scientists,
+    0.3,# inf_others_others,
+    # # update functions
+    f,# updt_truth,
+    f,# updt_scientists,
+    f,# updt_others
+    # # tolerance values
+    1,# out_tol_truth,
+    1,# in_tol_scientists,
+    1,# out_tol_scientists,
+    1,# in_tol_others,
+    1,# out_tol_others,
+    # # belief values
+    (build_belief, (3/5,1)),# bel_scientists_distr,
+    (build_belief, (0,1/4)),# bel_others_distr,
+    1,# bel_truth = 1.0,
+    # # is this Backfire-Effect? (or is it Boomerang-Effect)
+    True# backfire_effect = True
     )
-gr.quick_update(250)
+gr.quick_update(700)
 plt.close()
 gr.plot_history()
 if not os.path.exists("generated/"+name):
     os.mkdir("generated/"+name)
-plt.savefig("generated/"+name+'/ags_specific.jpg')
-# plt.show()
+# plt.savefig("generated/"+name+'/ags.jpg')
+plt.show()
 plt.close()
 siz = len(gr.polarization_history)
 plt.title(f"Final value = {gr.polarization_history[siz-1]}")
 gr.plot_polarization()
-plt.savefig("generated/"+name+'/pol_specific.jpg')
-# plt.show()
+# plt.savefig("generated/"+name+'/pol.jpg')
+plt.show()
 plt.close()
 red = (1,0,0)
 green = (0,1,0)
@@ -464,9 +384,9 @@ blue = (0,0,1)
 orange = (1,0.5,0)
 lblue = (0,0.5,1)
 black = (0,0,0)
-r1 = range(1,11)
-r2 = range(11,14)
-r3 = range(14,34)
+r1 = range(1,nsc+1)
+r2 = range(nsc+1,nsc+ncom+1)
+r3 = range(nsc+ncom+1,nsc+ncom+num+1)
 # draw_networkx(
 #     gr.graph,
 #     node_color=[red]+[orange for i in r1]+[green for i in r2]+[blue for i in r3],
@@ -475,25 +395,32 @@ r3 = range(14,34)
 # )
 dic = multipartite_layout(gr.graph, subset_key = "subset")
 
+# # array_op = lambda x: [10*x[0], x[1]]
+# array_op = lambda x: np.array([x[0]*10, x[1]])
+# # array_op = lambda x: print(np.array(x[0]*2, x[1]))
+# # array_op = lambda x: np.array(x[0],x[1])
+# # array_op = lambda x: print(np.array([x[0],x[1]]))
+# print(dic)
+# dic = {p:array_op(dic[p]) for p in dic}
+# print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+# print(dic)
 
 print(gr.graph.number_of_edges())
-re1 = range(10)
-re2 = range(10, 14)
-re3 = range(14,30)
-re4 = range(30, gr.graph.number_of_edges())
+re1 = range(nsc)
+re2 = range(nsc, nsc+ncom)
+re3 = range(nsc+ncom,num+nsc)
+re4 = range(num+nsc, gr.graph.number_of_edges())
 draw_networkx(
     gr.graph,
-    # node_color = [red]+[orange for i in r1]+[green for i in r2]+[blue for i in r3],
-    node_color = [gr.graph.nodes[i]["node_color"] for i in gr.graph.nodes],
-    #edge_color = [orange for i in re1] + [green for i in re2] + [blue for i in re4] + [blue for i in re3],
-    edge_color = [gr.graph.edges[i]["edge_color"] for i in gr.graph.edges],
+    node_color = [red]+[orange for i in r1]+[green for i in r2]+[blue for i in r3],
+    edge_color = [orange for i in re1] + [green for i in re2] + [blue for i in re4] + [blue for i in re3],
     with_labels = False,
-    pos = nx.drawing.kamada_kawai_layout(gr.graph),#multipartite_layout(gr.graph, subset_key = "subset"),
-    node_size = 300, # 300
-    arrowsize = 10, # 10
-    linewidths = 1 # 1.0
+    pos = multipartite_layout(gr.graph, subset_key = "subset"),
+    # node_size = 30, # 300
+    # arrowsize = 3, # 10
+    linewidths = 0.1 # 1.0
 )
 
-plt.savefig("generated/"+name+'/'+name+'_specific.jpg')
-# plt.show()
+# plt.savefig("generated/"+name+'/'+name+'.jpg')
+plt.show()
 plt.close()
