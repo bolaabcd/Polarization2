@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import networkx as nx
 from polarization_measure import pol_ER_discretized, get_max_pol
 
+# Note: this code needs some refactoring, it was done in a such a way that the tests that used its older versions would still work.
+
 BELIEF_VALUE = "blf"
 INFLUENCE_VALUE = "inf"
 UPDATE_F = "upf"
@@ -19,8 +21,8 @@ class Society_Graph:
         num_agents : int, 
         initial_belief : list,
         initial_influence : np.ndarray,
-        initial_tolerance : list,
-        initial_fs : list,
+        initial_tolerance,
+        initial_fs,
         backfire_effect: bool = True, # False means boomerang effect
         node_color : str = "tab:blue",
         edge_color : str = "tab:gray",
@@ -38,16 +40,15 @@ class Society_Graph:
         if type(initial_tolerance[0]) != type((1,1)):
             initial_tolerance = zip(initial_tolerance, initial_tolerance)
         self.see_constant_agents = see_constant_agents
-        self.set_beliefs(initial_belief)
-        self.set_influences(initial_influence)
-        # print(initial_tolerance)
-        self.set_tolerances(initial_tolerance)
-        self.set_fs(initial_fs)
-        self.subsets = 1
         if backfire_effect:
             self.backfire_effect = 0
         else:
             self.backfire_effect = 1
+        self.set_beliefs(initial_belief)
+        self.set_influences(initial_influence)
+        self.set_tolerances(initial_tolerance)
+        self.set_fs(initial_fs)
+        self.subsets = 1
 
     def set_fs(self,fs_list : list):
         if self.num_agents != len(fs_list):
@@ -95,32 +96,42 @@ class Society_Graph:
             except NetworkXError:
                 pass
     
-    def set_tolerances(self, tolerance_list : list):
-        if self.num_agents != len(tolerance_list):
-            raise ValueError("Invalid size of tolerance list.")
-        for i, val in enumerate(tolerance_list):
-            # print(val,'b')
-            self.set_tolerance(i, val)
-    def set_tolerance(self, i : int, val : tuple):
-        # print(val, 'a')
-        if type(val) == type((0,0)):
-            if val[0] < -1 or val[0] > 1 or val[1] < -1 or val[1] > 1:
-                raise ValueError("Invalid tolerance value.")
+    def set_tolerances(self, tolerance_list):
+        if type(tolerance_list) == type(np.array([])) and len(tolerance_list.shape) == 2:
+            if self.num_agents != len(tolerance_list) or self.num_agents != len(tolerance_list[0]):
+                raise ValueError("Invalid size of tolerance list.")
+            for i in range(self.num_agents):
+                for j in range(self.num_agents):
+                    self.set_tolerance(i,j,tolerance_list[i][j])
         else:
-            raise ValueError("Invalid tolerance value.")
-        self.graph.nodes[i][TOLERANCE_VALUE]  = val
+            if self.num_agents != len(tolerance_list):
+                raise ValueError("Invalid size of tolerance list.")
+            for i, val in enumerate(tolerance_list):
+                self.set_tolerance(i, val)
+    def set_tolerance(self, i : int, val : tuple, val2 = None):
+        if val2 == None:
+            if type(val) == type((0,0)):
+                if val[0] < -1 or val[0] > 1 or val[1] < -1 or val[1] > 1:
+                    raise ValueError("Invalid tolerance value.")
+            else:
+                raise ValueError("Invalid tolerance value.")
+
+            for j in self.graph.neighbors(i):
+                if self.backfire_effect:
+                    self.graph[j][i][TOLERANCE_VALUE] = val[0]
+                else:
+                    self.graph[i][j][TOLERANCE_VALUE] = val[1]
+        else:
+            j, val = val, val2
+            self.graph[i][j][TOLERANCE_VALUE] = val
     
     def apply_f(self, nbr : int, n : int, graph = None):
         if graph == None:
             graph = self.graph
         f = graph.nodes[n][UPDATE_F]
         diff = graph.nodes[nbr][BELIEF_VALUE] - graph.nodes[n][BELIEF_VALUE]
-        if self.backfire_effect == 0:
-            tol = graph.nodes[n][TOLERANCE_VALUE][0]
-            return f(diff,tol) # x, k
-        else:
-            tol = graph.nodes[nbr][TOLERANCE_VALUE][1]
-            return f(diff,tol) # x,k
+        tol = graph[n][nbr][TOLERANCE_VALUE]
+        return f(diff, tol)
         
     def set_between_0_1(self, n : int):
         self.graph.nodes[n][BELIEF_VALUE] = max(0,self.graph.nodes[n][BELIEF_VALUE])
@@ -150,17 +161,13 @@ class Society_Graph:
     def quick_update(self, number_of_updates):
         n = self.num_agents
         f0 = self.graph.nodes[0][UPDATE_F]
-        # print(self.graph.number_of_nodes())
+
         for i in range(self.graph.number_of_nodes()):
-            # print(i, self.graph.nodes[i])
             if self.graph.nodes[i][UPDATE_F] != f0:
                 raise RuntimeError("Invalid state for quick_update: not all agents use the same update function.")
         blf_mat = [self.graph.nodes[i][BELIEF_VALUE] for i in range(self.graph.number_of_nodes())]
         blf_mat = np.array(blf_mat)
-        # print([self.graph.nodes[i][TOLERANCE_VALUE] for i in range(self.graph.number_of_nodes())])
-        tol_mat = np.full((n, n), 0) + np.array([self.graph.nodes[i][TOLERANCE_VALUE][0]  for i in range(self.graph.number_of_nodes())])[np.newaxis,:]
-        if self.backfire_effect == 0:
-            tol_mat = tol_mat.T
+        tol_mat = nx.convert_matrix.to_numpy_array(self.graph,weight=TOLERANCE_VALUE)
         inf_mat = nx.convert_matrix.to_numpy_array(self.graph,weight=INFLUENCE_VALUE)
         neighbours = [np.count_nonzero(inf_mat[:, i]) for i, _ in enumerate(blf_mat)]
         valids = self.get_valid_agents()
@@ -187,7 +194,6 @@ class Society_Graph:
             valids[i] = False
         return valids
     def plot_history(self):
-        # print(self.belief_history)
         plt.plot(self.belief_history)
     
     def plot_polarization(self):
@@ -201,11 +207,11 @@ class Society_Graph:
         for i in range(other.number_of_nodes()):
             self.graph.add_node(i+n, node_color = other.nodes[i]["node_color"])
             self.set_belief(i+n,other.nodes[i][BELIEF_VALUE])
-            self.set_tolerance(i+n,other.nodes[i][TOLERANCE_VALUE])
             self.set_f(i+n,other.nodes[i][UPDATE_F])
             self.graph.nodes[i+n]['subset'] = self.subsets
         for i,j in other.edges():
             self.set_influence(i+n,j+n,other[i][j][INFLUENCE_VALUE], other[i][j]["edge_color"])
+            self.set_tolerance(i+n,j+n,other[i][j][TOLERANCE_VALUE])
         self.num_agents = self.graph.number_of_nodes()
         self.belief_history = [list(np.array(self.get_beliefs())[self.get_valid_agents()])]
         self.polarization_history = [self.pol(self.get_beliefs(),ignore_these_indexes=self.get_constant_agents())/get_max_pol(self.num_agents-len(self.get_constant_agents()))]
