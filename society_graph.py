@@ -193,7 +193,7 @@ class Society_Graph:
             valids[i] = False
         return valids
 
-    def append(self, other : DiGraph): # also accepts other as Society Graph
+    def append(self, other : DiGraph) -> None: # also accepts other as Society Graph
         if type(other) is Society_Graph:
             other = other.graph
         n = self.graph.number_of_nodes()
@@ -208,13 +208,31 @@ class Society_Graph:
         self.num_agents = self.graph.number_of_nodes()
         self.register_state()
 
-    def plot_history(self):
-        plt.plot(self.belief_history)    
-    def plot_polarization(self):
-        plt.plot(self.polarization_history)
-    def draw_graph(self):
+    def plot_history(self, ax : plt.Axes = None, fig : plt.Figure = None) -> (plt.Axes, plt.Figure):
+        if fig == None and ax != None:
+            raise ValueError("Invalid values: matplotlib ax specified, but figure not specified.")
+        if fig == None:
+            fig = plt.figure()
+        if ax == None:
+            ax = fig.add_subplot()
+        ax.plot(np.array(self.belief_history))
+        for i,j in enumerate(ax.lines):
+            j.set_color(self.graph.nodes[i][COLOR])
+        return ax, fig
+
+    def plot_polarization(self, ax : plt.Axes = None, fig : plt.Figure = None, color : str = 'tab:blue') -> (plt.Axes, plt.Figure):
+        if fig == None and ax != None:
+            raise ValueError("Invalid values: matplotlib ax specified, but figure not specified.")
+        if fig == None:
+            fig = plt.figure()
+        if ax == None:
+            ax = fig.add_subplot()
+        ax.plot(np.array(self.polarization_history), color = color)
+        return ax, fig
+
+    def draw_graph(self) -> None:
         nx.draw(
             self.graph, 
-            node_color = [self.graph.nodes[i]["node_color"] for i in self.graph.nodes],
-            edge_color = [self.graph.edges[i]["edge_color"] for i in self.graph.edges]
+            node_color = [self.graph.nodes[i][COLOR] for i in self.graph.nodes],
+            edge_color = [self.graph.edges[i][COLOR] for i in self.graph.edges]
         )
