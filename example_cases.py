@@ -1,10 +1,11 @@
-from types import FunctionType
-from matplotlib import pyplot as plt
-from numpy.random.mtrand import f
-from society_graph import Society_Graph
 import cli_utils as cli
 import numpy as np
 import os
+from matplotlib import pyplot as plt
+from numpy.random.mtrand import f
+from types import FunctionType
+
+from society_graph import Society_Graph
 import default_beliefs,default_fs,default_influences,default_tolerances,belief_update_fs
 
 # Connects each in a to every agents in b
@@ -27,7 +28,7 @@ def simple_clique_consensus(
             num_agents,
             np.array([consensus_value for i in range(num_agents)]),
             default_influences.build_inf_graph_clique(num_agents,influence_value),
-            default_tolerances.build_tol_list_constant(num_agents,tolerance_value),
+            default_tolerances.build_tol_matrix_constant(num_agents,tolerance_value),
             default_fs.same(num_agents,function)
         )
 

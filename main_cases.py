@@ -5,10 +5,10 @@ from matplotlib import pyplot as plt
 from numpy.random.mtrand import f
 from types import FunctionType
 
-import cli_utils as cli
-import default_beliefs,default_fs,default_influences,default_tolerances,belief_update_fs
 from society_graph import Society_Graph
 from example_cases import all_edges, simple_clique_uniform
+import cli_utils as cli
+import default_beliefs,default_fs,default_influences,default_tolerances,belief_update_fs
 
 # truth influences scientists. Some scientists are science comunicators, who influence all of the others. The others may influence the scientists and themselves.
 def scientists_buffer(

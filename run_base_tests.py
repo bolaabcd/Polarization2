@@ -1,5 +1,38 @@
 from example_cases import *
 
+# society type -> parameter -> range
+all_sims = (
+	(
+		simple_tripartite,
+		[
+	        (33,()),# num_agents, 
+	        (FUNCTION,()),# function,
+	        (0,()),# consensus_value1, 
+	        (0.5,()),# consensus_value2, 
+	        (1,()),# consensus_value3, 
+	        (1,()),# tolerance_value1,
+	        (1,()),# tolerance_value2,
+	        (1,()),# tolerance_value3,
+	        (1,()),# influence_value1,
+	        (1,()),# influence_value2,
+	        (1,()),# influence_value3,
+	        (1,()),# influence_value12,
+	        (1,()),# influence_value21,
+	        (1,()),# influence_value23,
+	        (1,()),# influence_value32
+		]
+	), 
+	(
+		simple_clique_uniform,
+		[
+			()
+		]
+	)
+	, clique_tripartite, clique_two_influencers_uniform, clique_one_influencer_uniform, tripartite_one_influencer, tripartite_two_influencers
+)
+
+for 
+
 # FUNCTION = belief_update_fs.quadratic_update
 # NAME = "Quadratic"
 
