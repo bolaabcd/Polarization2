@@ -9,27 +9,32 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 """
 
 import math
-from enum import Enum
 import numpy as np
 
-class Default_Belief(Enum):
+from enum import Enum
+
+class Belief_Type(Enum):
     UNIFORM = 0
     MILD = 1
     EXTREME = 2
     TRIPLE = 3
     RANDOM = 4
 
-def build_belief(belief_type: Default_Belief, num_agents : int, initval: float = 0, finval: float = 1):
-    assert(finval >= initval)
+def build_belief(belief_type: Belief_Type, num_agents : int, initval: float = 0, finval: float = 1) -> np.ndarray:
+    if finval < initval:
+        raise ValueError("Interval given ends before it begins.")
     dif = finval-initval
-    if belief_type is Default_Belief.MILD:
+
+    if belief_type is Belief_Type.MILD:
         middle = math.ceil(num_agents / 2)
-        return [initval+dif*(0.2 + 0.2 * i / middle) if i < middle else initval+dif*(0.6 + 0.2 * (i - middle) / (num_agents - middle)) for i in range(num_agents)]
-    if belief_type is Default_Belief.EXTREME:
+        return np.array([initval+dif*(0.2 + 0.2 * i / middle) if i < middle else initval+dif*(0.6 + 0.2 * (i - middle) / (num_agents - middle)) for i in range(num_agents)], dtype = np.float64)
+
+    elif belief_type is Belief_Type.EXTREME:
         middle = math.ceil(num_agents / 2)
-        return [initval + dif*(0.2 * i / middle) if i < middle else initval+dif*(0.8 + 0.2 * (i - middle) / (num_agents - middle)) for i in range(num_agents)]
-    if belief_type is Default_Belief.TRIPLE:
-        beliefs = [0.0] * num_agents
+        return np.array([initval + dif*(0.2 * i / middle) if i < middle else initval+dif*(0.8 + 0.2 * (i - middle) / (num_agents - middle)) for i in range(num_agents)], dtype = np.float64)
+    
+    elif belief_type is Belief_Type.TRIPLE:
+        beliefs = np.full(num_agents, 0.0, dtype = np.float64)
         first_third = num_agents // 3
         middle_third = math.ceil(num_agents * 2 / 3) - first_third
         last_third = num_agents - middle_third - first_third
@@ -39,7 +44,12 @@ def build_belief(belief_type: Default_Belief, num_agents : int, initval: float =
                 beliefs[j+offset] = initval+dif*(0.2 * j / segment + (0.4 * i))
             offset += segment
         return beliefs
-    if belief_type is Default_Belief.UNIFORM:
-        return [initval+dif*(i/(num_agents - 1)) for i in range(num_agents)]
-    if belief_type is Default_Belief.RANDOM:
-        return np.ndarray.tolist(np.random.uniform(initval,finval,num_agents))
+    
+    elif belief_type is Belief_Type.UNIFORM:
+        return np.array([initval+dif*(i/(num_agents - 1)) for i in range(num_agents)], dtype = np.float64)
+    
+    elif belief_type is Belief_Type.RANDOM:
+        return np.random.uniform(initval,finval,num_agents)
+    
+    else:
+        return ValueError('belief_type not recognized. Expected a "Belief_Type"')
