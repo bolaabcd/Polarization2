@@ -5,6 +5,7 @@ from matplotlib import pyplot as plt
 from numpy.random.mtrand import f
 from types import FunctionType
 
+from polarization_measure import pol_ER_discretized
 from society_graph import Society_Graph
 import default_beliefs,default_fs,default_influences,default_tolerances,belief_update_fs
 
@@ -56,11 +57,12 @@ def simple_clique_uniform(
         edge_color : str = "tab:gray",
         group_num : int = 0,
         see_constant_agents : bool = True,
-        constant_agents_tol : bool = False
+        constant_agents_tol : bool = False,
+        pol_measure : FunctionType = pol_ER_discretized
     ) -> Society_Graph:
         return Society_Graph(
             num_agents,
-            default_beliefs.build_belief(default_beliefs.Default_Belief.UNIFORM, num_agents, start_value, end_value),
+            default_beliefs.build_belief(default_beliefs.Belief_Type.UNIFORM, num_agents, start_value, end_value),
             default_influences.build_inf_graph_clique(num_agents,influence_value),
             default_fs.same(num_agents,function),
             default_tolerances.build_tol_matrix_constant(num_agents,tolerance_value),

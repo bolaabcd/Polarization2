@@ -5,8 +5,9 @@ from matplotlib import pyplot as plt
 from numpy.random.mtrand import f
 from types import FunctionType
 
-from society_graph import Society_Graph
 from example_cases import all_edges, simple_clique_uniform
+from polarization_measure import pol_ER_discretized
+from society_graph import Society_Graph
 import cli_utils as cli
 import default_beliefs,default_fs,default_influences,default_tolerances,belief_update_fs
 
@@ -23,11 +24,11 @@ def scientists_buffer(
         inf_others_scientists : np.float64,
         inf_others_others : np.float64,
         # update functions
-        updt_truth_scientists : FunctionType,
-        updt_scientists_scientists : FunctionType,
-        updt_scientists_others : FunctionType,
-        updt_others_scientists : FunctionType,
-        updt_others_others : FunctionType,
+        upf_truth_scientists : FunctionType,
+        upf_scientists_scientists : FunctionType,
+        upf_scientists_others : FunctionType,
+        upf_others_scientists : FunctionType,
+        upf_others_others : FunctionType,
         # tolerance values
         tol_truth_scientists : np.float64,
         tol_scientists_scientists : np.float64,
@@ -38,17 +39,19 @@ def scientists_buffer(
         bel_scientists_distr : np.float64,
         bel_others_distr : np.float64,
         bel_truth : np.float64 = 1.0,
+        # comunicators get directly influenced by truth?
+        comunicators_see_truth : bool = False,
         # post-simulation settings
         see_constant_agents: bool = True,
         constant_agents_tol: bool = False,
         pol_measure : FunctionType = pol_ER_discretized
-    ):
-    truth_node = Society_Graph(list
+    ) -> Society_Graph:
+    truth_node = Society_Graph(
         1,
         [bel_truth], 
         np.full((1,1),0),
-        default_fs.same(1,updt_truth),
-        [[1,1]], 
+        default_fs.same(1,upf_truth_scientists),
+        [[1]], 
         node_colors_vector  = ["#ff0000"],
         edge_colors_matrix  = [["#ff0000"]],
         node_groups_vector  = [0],
@@ -60,13 +63,13 @@ def scientists_buffer(
     
     scientists = Society_Graph(
         num_scientists,
-        bel_scientists_distr[0](default_beliefs.Default_Belief.UNIFORM, num_scientists,*(bel_scientists_distr[1])),
+        bel_scientists_distr[0](default_beliefs.Belief_Type.UNIFORM, num_scientists,*(bel_scientists_distr[1])),
         default_influences.build_inf_graph_clique(num_scientists, inf_scientists_scientists),
-        default_fs.same(num_scientists, updt_scientists_scientists),
+        default_fs.same(num_scientists, upf_scientists_scientists),
         default_tolerances.build_tol_matrix_constant(num_scientists, tol_scientists_scientists),
         node_colors_vector  = np.full(num_scientists, "#ff4444"),
         edge_colors_matrix  = np.full((num_scientists, num_scientists), "#ff7777"),
-        node_groups_vector  = np.full(num_scientists, 0),
+        node_groups_vector  = np.full(num_scientists, 1),
         see_constant_agents = see_constant_agents,
         constant_agents_tol = constant_agents_tol,
         pol_measure  = pol_measure
@@ -75,13 +78,13 @@ def scientists_buffer(
 
     comunicators = Society_Graph(
         num_comunicators,
-        bel_scientists_distr[0](default_beliefs.Default_Belief.UNIFORM, num_comunicators,*(bel_scientists_distr[1])),
+        bel_scientists_distr[0](default_beliefs.Belief_Type.UNIFORM, num_comunicators,*(bel_scientists_distr[1])),
         default_influences.build_inf_graph_clique(num_comunicators, inf_scientists_scientists),
-        default_fs.same(num_comunicators, updt_scientists_scientists),
+        default_fs.same(num_comunicators, upf_scientists_scientists),
         default_tolerances.build_tol_matrix_constant(num_comunicators, tol_scientists_scientists),
         node_colors_vector  = np.full(num_comunicators, "#4444ff"),
         edge_colors_matrix  = np.full((num_comunicators, num_comunicators), "#7777ff"),
-        node_groups_vector  = np.full(num_comunicators, 1),
+        node_groups_vector  = np.full(num_comunicators, 2),
         see_constant_agents = see_constant_agents,
         constant_agents_tol = constant_agents_tol,
         pol_measure  = pol_measure
@@ -90,13 +93,13 @@ def scientists_buffer(
 
     others = Society_Graph(
         num_others,
-        bel_others_distr[0](default_beliefs.Default_Belief.UNIFORM, num_others, *(bel_others_distr[1])),
+        bel_others_distr[0](default_beliefs.Belief_Type.UNIFORM, num_others, *(bel_others_distr[1])),
         default_influences.build_inf_graph_clique(num_others, inf_others_others),
-        default_fs.same(num_others,updt_others_others),
+        default_fs.same(num_others,upf_others_others),
         default_tolerances.build_tol_matrix_constant(num_others, tol_others_others),
         node_colors_vector  = np.full(num_others, "#44ff44"),
         edge_colors_matrix  = np.full((num_others, num_others), "#77ff77"),
-        node_groups_vector  = np.full(num_others, 2),
+        node_groups_vector  = np.full(num_others, 3),
         see_constant_agents = see_constant_agents,
         constant_agents_tol = constant_agents_tol,
         pol_measure  = pol_measure
@@ -117,10 +120,10 @@ def scientists_buffer(
     result.append(scientists)
     result.append(comunicators)
     result.append(others)
-    if inf_truth != 0:
-        result.graph.add_edges_from(truth_to_scientists, inf = inf_truth, tol = tol_truth, upf = upf_truth)
+    if inf_truth_scientists != 0:
+        result.graph.add_edges_from(truth_to_scientists, inf = inf_truth_scientists, tol = tol_truth_scientists, upf = upf_truth_scientists)
         if comunicators_see_truth:
-            result.graph.add_edges_from(truth_to_comunicators, inf = inf_truth, tol = tol_truth, upf = upf_truth)
+            result.graph.add_edges_from(truth_to_comunicators, inf = inf_truth_scientists, tol = tol_truth_scientists, upf = upf_truth_scientists)
     if inf_scientists_scientists != 0:
         result.graph.add_edges_from(scientists_to_comunicators, inf = inf_scientists_scientists, tol = tol_scientists_scientists, upf = upf_scientists_scientists)
         result.graph.add_edges_from(comunicators_to_scientists, inf = inf_scientists_scientists, tol = tol_scientists_scientists, upf = upf_scientists_scientists)
@@ -156,7 +159,7 @@ def many_sides(
         see_constant_agents: bool = True,
         constant_agents_tol: bool = False,
         pol_measure : FunctionType = pol_ER_discretized
-    ):
+    ) -> Society_Graph:
     sides = simple_clique_uniform(
         num_sides, # num_agents : int, 
         update_agent_agent, # function : FunctionType,

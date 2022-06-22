@@ -36,11 +36,11 @@ class Society_Graph:
         self.num_agents = num_agents
         self.graph = nx.DiGraph()
 
-        if node_colors_vector == None:
+        if node_colors_vector is None:
             node_colors_vector = np.full(num_agents, "tab:blue")
-        if edge_colors_matrix == None:
+        if edge_colors_matrix is None:
             edge_colors_matrix = np.full((num_agents,num_agents), "tab:gray")
-        if node_groups_vector == None:
+        if node_groups_vector is None:
             node_groups_vector = np.full(num_agents, 0)
 
         initial_belief_vector = np.array(initial_belief_vector)
@@ -72,21 +72,21 @@ class Society_Graph:
             raise ValueError("Invalid size of list of node colors.")
         if len(groups) != self.num_agents:
             raise ValueError("Invalid size of list of node groups.")
-        for i in range(num_agents):
+        for i in range(self.num_agents):
             self.graph.add_node(i, group = groups[i], color = colors[i])
-        set_beliefs(initial_beliefs)
+        self.set_beliefs(initial_beliefs)
     def set_beliefs(self, belief_values : np.ndarray) -> None:
         if self.num_agents != len(belief_values):
             raise ValueError("Invalid size of belief values list.")
         for i, val in enumerate(belief_values):
             self.set_belief(i, val)
-        self.register_state()
+        # self.register_state()
     def set_belief(self, i : int, val : np.float64) -> None:
         if val > 1 or val < 0:
             raise ValueError("Invalid belief value.")
         self.graph.nodes[i][BELIEF_VALUE] = val
     
-    def set_edges(initial_influences : np.ndarray, edge_colors : np.ndarray, initial_tolerances : np.ndarray, initial_fs : np.ndarray) -> None:
+    def set_edges(self, initial_influences : np.ndarray, edge_colors : np.ndarray, initial_tolerances : np.ndarray, initial_fs : np.ndarray) -> None:
         if self.num_agents != initial_fs.shape[0]:
             raise ValueError("Invalid size of one-to-one functions matrix.")
         if self.num_agents != initial_fs.shape[1]:
@@ -116,7 +116,7 @@ class Society_Graph:
             raise ValueError("Invalid influence value.")
         if val != 0:
             if not self.graph.has_edge(i,j):
-                self.graph.add_edge(i,j, color = edge_color, inf = val)
+                self.graph.add_edge(i,j, inf = val)
         elif self.graph.has_edge(i,j):
             self.graph.remove_edge(i,j)
 
@@ -126,10 +126,10 @@ class Society_Graph:
         ignore = []
         if not self.constant_agents_tol:
             ignore = self.get_constant_agents()
-        self.polarization_history.append(self.pol(blfs, ignore_these_indexes=ignore)/get_max_pol(self.num_agents - len(ignore)))
+        self.polarization_history.append(self.pol_msr(blfs, ignore_these_indexes=ignore)/get_max_pol(self.num_agents - len(ignore)))
 
     def apply_f(self, nbr : int, n : int, graph = None) -> np.float64:
-        if graph == None:
+        if graph is None:
             graph = self.graph
         f = graph.nodes[n][UPDATE_F]
         diff = graph.nodes[nbr][BELIEF_VALUE] - graph.nodes[n][BELIEF_VALUE]
@@ -164,8 +164,8 @@ class Society_Graph:
         
         blf_mat = [self.graph.nodes[i][BELIEF_VALUE] for i in range(n)]
         blf_mat = np.array(blf_mat)
-        tol_mat = nx.convert_matrix.to_numpy_array(self.graph, weight = TOLERANCE_VALUE)
-        inf_mat = nx.convert_matrix.to_numpy_array(self.graph, weight = INFLUENCE_VALUE)
+        tol_mat = nx.convert_matrix.to_numpy_array(self.graph, weight = TOLERANCE_VALUE) # sets to 1 if edge is not specified
+        inf_mat = nx.convert_matrix.to_numpy_array(self.graph, weight = INFLUENCE_VALUE) # sets to 1 if edge is not specified
         neighbours = [np.count_nonzero(inf_mat[:, i]) for i, _ in enumerate(blf_mat)]
         valids = self.get_valid_agents()
         for i in range(number_of_updates):
@@ -206,26 +206,29 @@ class Society_Graph:
             self.graph[i+n][j+n][TOLERANCE_VALUE] = other[i][j][TOLERANCE_VALUE]
             self.graph[i+n][j+n][COLOR] = other[i][j][COLOR]
         self.num_agents = self.graph.number_of_nodes()
+        self.polarization_history = []
+        self.belief_history = []
         self.register_state()
 
     def plot_history(self, ax : plt.Axes = None, fig : plt.Figure = None) -> (plt.Axes, plt.Figure):
-        if fig == None and ax != None:
+        if fig is None and ax is not None:
             raise ValueError("Invalid values: matplotlib ax specified, but figure not specified.")
-        if fig == None:
+        if fig is None:
             fig = plt.figure()
-        if ax == None:
+        if ax is None:
             ax = fig.add_subplot()
+        # print(self.belief_history)
         ax.plot(np.array(self.belief_history))
         for i,j in enumerate(ax.lines):
             j.set_color(self.graph.nodes[i][COLOR])
         return ax, fig
 
     def plot_polarization(self, ax : plt.Axes = None, fig : plt.Figure = None, color : str = 'tab:blue') -> (plt.Axes, plt.Figure):
-        if fig == None and ax != None:
+        if fig is None and ax is not None:
             raise ValueError("Invalid values: matplotlib ax specified, but figure not specified.")
-        if fig == None:
+        if fig is None:
             fig = plt.figure()
-        if ax == None:
+        if ax is None:
             ax = fig.add_subplot()
         ax.plot(np.array(self.polarization_history), color = color)
         return ax, fig

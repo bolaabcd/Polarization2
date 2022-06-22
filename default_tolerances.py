@@ -6,7 +6,14 @@ def build_tol_matrix_constant(num_agents : int, tolerance_value : np.float64) ->
 
 def build_tol_matrix_random(num_agents : int) -> np.ndarray:
     return np.random.uniform(-1, 1, (num_agents, num_agents))
-    
+
+
+def build_tol_matrix_backfire(num_agents : int, tolerance_list : np.ndarray) -> np.ndarray:
+    return np.zeros((num_agents,num_agents)) + np.array([tolerance_list])
+def build_tol_matrix_boomerang(num_agents : int, tolerance_list : np.ndarray) -> np.ndarray:
+    return build_tol_matrix_backfire(num_agents, tolerance_list).T
+
+
 class Tolerance(Enum):
     CONSTANT = 0
     RANDOM = 1
