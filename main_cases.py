@@ -13,42 +13,48 @@ import default_beliefs,default_fs,default_influences,default_tolerances,belief_u
 # truth influences scientists. Some scientists are science comunicators, who influence all of the others. The others may influence the scientists and themselves.
 def scientists_buffer(
 		# ammount of each class (1 truth always)
-        num_scientists,
-        num_comunicators, # extra scientists
-        num_others,
+        num_scientists : int,
+        num_comunicators : int, # extra scientists
+        num_others : int,
         # influence values
-        inf_truth,
-        inf_scientists_scientists,
-        inf_scientists_others,
-        inf_others_scientists,
-        inf_others_others,
+        inf_truth_scientists : np.float64,
+        inf_scientists_scientists : np.float64,
+        inf_scientists_others : np.float64,
+        inf_others_scientists : np.float64,
+        inf_others_others : np.float64,
         # update functions
-        updt_truth,
-        updt_scientists,
-        updt_others,
+        updt_truth_scientists : FunctionType,
+        updt_scientists_scientists : FunctionType,
+        updt_scientists_others : FunctionType,
+        updt_others_scientists : FunctionType,
+        updt_others_others : FunctionType,
         # tolerance values
-        out_tol_truth,
-        in_tol_scientists,
-        out_tol_scientists,
-        in_tol_others,
-        out_tol_others,
+        tol_truth_scientists : np.float64,
+        tol_scientists_scientists : np.float64,
+        tol_scientists_others : np.float64,
+        tol_others_scientists : np.float64,
+        tol_others_others : np.float64,
         # belief values
-        bel_scientists_distr,
-        bel_others_distr,
-        bel_truth = 1.0,
-        # is this Backfire-Effect? (or is it Boomerang-Effect)
-        backfire_effect = True,
-        # do comunicators get influence from the truth?
-        comunicators_see_truth = False,
+        bel_scientists_distr : np.float64,
+        bel_others_distr : np.float64,
+        bel_truth : np.float64 = 1.0,
+        # post-simulation settings
+        see_constant_agents: bool = True,
+        constant_agents_tol: bool = False,
+        pol_measure : FunctionType = pol_ER_discretized
     ):
-    truth_node = Society_Graph(
+    truth_node = Society_Graph(list
         1,
         [bel_truth], 
         np.full((1,1),0),
-        [(1,out_tol_truth)], 
         default_fs.same(1,updt_truth),
-        backfire_effect,
-        "tab:red"
+        [[1,1]], 
+        node_colors_vector  = ["#ff0000"],
+        edge_colors_matrix  = [["#ff0000"]],
+        node_groups_vector  = [0],
+        see_constant_agents = see_constant_agents,
+        constant_agents_tol = constant_agents_tol,
+        pol_measure  = pol_measure
     )
     size1 = 1
     
@@ -56,10 +62,14 @@ def scientists_buffer(
         num_scientists,
         bel_scientists_distr[0](default_beliefs.Default_Belief.UNIFORM, num_scientists,*(bel_scientists_distr[1])),
         default_influences.build_inf_graph_clique(num_scientists, inf_scientists_scientists),
-        default_tolerances.build_tol_list_constant(num_scientists, in_tol_scientists, out_tol_scientists),
-        default_fs.same(num_scientists,updt_scientists),
-        backfire_effect,
-        "tab:orange"
+        default_fs.same(num_scientists, updt_scientists_scientists),
+        default_tolerances.build_tol_matrix_constant(num_scientists, tol_scientists_scientists),
+        node_colors_vector  = np.full(num_scientists, "#ff4444"),
+        edge_colors_matrix  = np.full((num_scientists, num_scientists), "#ff7777"),
+        node_groups_vector  = np.full(num_scientists, 0),
+        see_constant_agents = see_constant_agents,
+        constant_agents_tol = constant_agents_tol,
+        pol_measure  = pol_measure
     )
     size2 = num_scientists
 
@@ -67,10 +77,14 @@ def scientists_buffer(
         num_comunicators,
         bel_scientists_distr[0](default_beliefs.Default_Belief.UNIFORM, num_comunicators,*(bel_scientists_distr[1])),
         default_influences.build_inf_graph_clique(num_comunicators, inf_scientists_scientists),
-        default_tolerances.build_tol_list_constant(num_comunicators, in_tol_scientists, out_tol_scientists),
-        default_fs.same(num_comunicators,updt_scientists),
-        backfire_effect,
-        "tab:green"
+        default_fs.same(num_comunicators, updt_scientists_scientists),
+        default_tolerances.build_tol_matrix_constant(num_comunicators, tol_scientists_scientists),
+        node_colors_vector  = np.full(num_comunicators, "#4444ff"),
+        edge_colors_matrix  = np.full((num_comunicators, num_comunicators), "#7777ff"),
+        node_groups_vector  = np.full(num_comunicators, 1),
+        see_constant_agents = see_constant_agents,
+        constant_agents_tol = constant_agents_tol,
+        pol_measure  = pol_measure
     )
     size3 = num_comunicators
 
@@ -78,79 +92,83 @@ def scientists_buffer(
         num_others,
         bel_others_distr[0](default_beliefs.Default_Belief.UNIFORM, num_others, *(bel_others_distr[1])),
         default_influences.build_inf_graph_clique(num_others, inf_others_others),
-        default_tolerances.build_tol_list_constant(num_others, in_tol_others, out_tol_others),
-        default_fs.same(num_others,updt_others),
-        backfire_effect
+        default_fs.same(num_others,updt_others_others),
+        default_tolerances.build_tol_matrix_constant(num_others, tol_others_others),
+        node_colors_vector  = np.full(num_others, "#44ff44"),
+        edge_colors_matrix  = np.full((num_others, num_others), "#77ff77"),
+        node_groups_vector  = np.full(num_others, 2),
+        see_constant_agents = see_constant_agents,
+        constant_agents_tol = constant_agents_tol,
+        pol_measure  = pol_measure
     )
     size4 = num_others
 
-    truth_to_scientists = all_edges(range(size1), range(size1, size1+size2))
-    truth_to_comunicators = all_edges(range(size1), range(size1+size2,size1+size2+size3))
+    truth_to_scientists = all_edges(range(size1), range(size1, size1 + size2))
+    truth_to_comunicators = all_edges(range(size1), range(size1 + size2, size1 + size2 + size3))
 
-    scientists_to_comunicators = all_edges(range(size1, size1+size2), range(size1+size2, size1+size2+size3))
-    comunicators_to_scientists = all_edges(range(size1+size2, size1+size2+size3), range(size1, size1+size2))
+    scientists_to_comunicators = all_edges(range(size1, size1 + size2), range(size1 + size2, size1 + size2 + size3))
+    comunicators_to_scientists = all_edges(range(size1 + size2, size1 + size2 + size3), range(size1, size1 + size2))
 
-    comunicators_to_others = all_edges(range(size1+size2, size1+size2+size3), range(size1+size2+size3, size1+size2+size3+size4))
+    comunicators_to_others = all_edges(range(size1 + size2, size1 + size2 + size3), range(size1 + size2 + size3, size1 + size2 + size3 + size4))
     # comunicators are also considered scientists here
-    others_to_scientists = all_edges(range(size1+size2+size3, size1+size2+size3+size4), range(size1, size1+size2+size3))
+    others_to_scientists = all_edges(range(size1 + size2 + size3, size1 + size2 + size3 + size4), range(size1, size1 + size2 + size3))
 
-    # nx.set_node_attributes(truth_node.graph,1,"subset")
-    # nx.set_node_attributes(scientists.graph,2,"subset")
-    # nx.set_node_attributes(comunicators.graph,3,"subset")
-    # nx.set_node_attributes(others.graph,4,"subset")
     result = truth_node
     result.append(scientists)
     result.append(comunicators)
     result.append(others)
     if inf_truth != 0:
-        result.graph.add_edges_from(truth_to_scientists, inf = inf_truth, edge_color = 'tab:red')
+        result.graph.add_edges_from(truth_to_scientists, inf = inf_truth, tol = tol_truth, upf = upf_truth)
         if comunicators_see_truth:
-            result.graph.add_edges_from(truth_to_comunicators, inf = inf_truth, edge_color = 'tab:red')
+            result.graph.add_edges_from(truth_to_comunicators, inf = inf_truth, tol = tol_truth, upf = upf_truth)
     if inf_scientists_scientists != 0:
-        result.graph.add_edges_from(scientists_to_comunicators, inf = inf_scientists_scientists, edge_color = 'tab:orange')
-        result.graph.add_edges_from(comunicators_to_scientists, inf = inf_scientists_scientists, edge_color = 'tab:green')
+        result.graph.add_edges_from(scientists_to_comunicators, inf = inf_scientists_scientists, tol = tol_scientists_scientists, upf = upf_scientists_scientists)
+        result.graph.add_edges_from(comunicators_to_scientists, inf = inf_scientists_scientists, tol = tol_scientists_scientists, upf = upf_scientists_scientists)
     # print(result.graph.number_of_nodes(), 'a')
     if inf_scientists_others != 0:
-        result.graph.add_edges_from(comunicators_to_others, inf = inf_scientists_others, edge_color = 'tab:green')
+        result.graph.add_edges_from(comunicators_to_others, inf = inf_scientists_others, tol = tol_scientists_others, upf = upf_scientists_others)
     if inf_others_scientists != 0:
-        result.graph.add_edges_from(others_to_scientists, inf = inf_others_scientists, edge_color = 'tab:blue')
+        result.graph.add_edges_from(others_to_scientists, inf = inf_others_scientists, tol = tol_others_scientists, upf = upf_others_scientists)
 
     return result
 
 
 def many_sides(
         # number of sides, agents initially defending sides and neutral agents
-        num_sides,
-        num_agents_sides,
-        num_neutral_agents,
+        num_sides : int,
+        num_agents_sides : int,
+        num_neutral_agents : int,
         # influences from the sides to agents, and from agent to agent
-        influences_sides_agent,
-        influence_agent_agent,
-        # update function
-        agent_update,
+        influence_sides_agent : np.float64,
+        influence_agent_agent : np.float64,
+        # update functions
+        update_sides_agent : np.float64,
+        update_agent_agent : np.float64,
         # tolerances
-        in_tolerance_agent,
-        out_tolerance_agent,
-        out_tolerance_sides,
+        tolerance_sides_agent : np.float64,
+        tolerance_agent_agent : np.float64,
         # value of agent defend side is side_value +- side_diff
-        side_diff,
+        side_diff : np.float64,
         # interval of belief values of neutral agents
-        neutral_low = 0,
-        neutral_high = 1,
-        # will we use backfire-effect? (or boomerang effect?)
-        is_backfire = True,
-        ignore_constant = False
+        neutral_low : np.float64 = 0,
+        neutral_high : np.float64 = 1,
+        # post-simulation settings
+        see_constant_agents: bool = True,
+        constant_agents_tol: bool = False,
+        pol_measure : FunctionType = pol_ER_discretized
     ):
     sides = simple_clique_uniform(
-        num_sides, # num_agents 
-        agent_update, # function
-        0, # start_value
-        1, # end_value
-        (1,out_tolerance_sides), # tolerance_value
-        0, # influence_value
-        is_backfire,
-        "tab:red",#node_color
-        ignore_constant = ignore_constant
+        num_sides, # num_agents : int, 
+        update_agent_agent, # function : FunctionType,
+        0, # start_value : np.float64,
+        1, # end_value : np.float64,
+        tolerance_agent_agent, # tolerance_value : np.float64,
+        influence_agent_agent, # influence_value : np.float64,
+        "#ff0000", # node_color : str = "tab:blue",
+        "#000000", # edge_color : str = "tab:gray",
+        0, # group_num : int = 0,
+        see_constant_agents = see_constant_agents, # see_constant_agents : bool = True,
+        constant_agents_tol = constant_agents_tol # constant_agents_tol : bool = False
     )
     size1 = num_sides
 
@@ -169,29 +187,33 @@ def many_sides(
         k += 1
         side_agents += [
             simple_clique_uniform(
-                i,# num_agents, 
-                agent_update,# function,
-                max(val - side_diff, 0),# start_value,
-                min(val + side_diff, 1),# end_value, 
-                (in_tolerance_agent, out_tolerance_agent),# tolerance_value,
-                influence_agent_agent,# influence_value,
-                is_backfire,
-                "tab:orange",
-                ignore_constant = ignore_constant
+                i, # num_agents : int, 
+                update_agent_agent, # function : FunctionType,
+                max(val - side_diff, 0), # start_value : np.float64,
+                min(val + side_diff, 1), # end_value : np.float64,
+                tolerance_agent_agent, # tolerance_value : np.float64,
+                influence_agent_agent, # influence_value : np.float64,
+                "#ff7700", # node_color : str = "tab:blue",
+                "#ff7700", # edge_color : str = "tab:gray",
+                cnt + 1, # group_num : int = 0,
+                see_constant_agents = see_constant_agents, # see_constant_agents : bool = True,
+                constant_agents_tol = constant_agents_tol # constant_agents_tol : bool = False
             )
         ]
     size2 = size2
 
     neutral_agents = simple_clique_uniform(
-        num_neutral_agents,# num_agents, 
-        agent_update,# function,
-        neutral_low,# start_value,
-        neutral_high,# end_value, 
-        (in_tolerance_agent, out_tolerance_agent),# tolerance_value,
-        influence_agent_agent,# influence_value,
-        is_backfire,
-        "tab:green",#node_color
-        ignore_constant = ignore_constant
+        num_neutral_agents, # num_agents : int, 
+        update_agent_agent, # function : FunctionType,
+        neutral_low, # start_value : np.float64,
+        neutral_high, # end_value : np.float64,
+        tolerance_agent_agent, # tolerance_value : np.float64,
+        influence_agent_agent, # influence_value : np.float64,
+        "#00ff00", # node_color : str = "tab:blue",
+        "#00ff00", # edge_color : str = "tab:gray",
+        len(num_agents_sides) + 1, # group_num : int = 0,
+        see_constant_agents = see_constant_agents, # see_constant_agents : bool = True,
+        constant_agents_tol = constant_agents_tol # constant_agents_tol : bool = False
     )
     size3 = num_neutral_agents
 
@@ -212,10 +234,10 @@ def many_sides(
     result.append(neutral_agents)
 
     if influences_sides_agent != 0:
-        result.graph.add_edges_from(side_to_sideagents, inf = influences_sides_agent, edge_color = 'tab:red')
+        result.graph.add_edges_from(side_to_sideagents, inf = influences_sides_agent, tol = tolerances_sides_agent, upf = update_sides_agent, color = '#ff4444')
     if influence_agent_agent != 0:
-        result.graph.add_edges_from(sideagents_to_agents, inf = influence_agent_agent, edge_color = 'tab:orange')
-        result.graph.add_edges_from(agents_to_sideagents, inf = influence_agent_agent, edge_color = 'tab:green')
-        result.graph.add_edges_from(agents_to_agents, inf = influence_agent_agent, edge_color = 'tab:gray')
+        result.graph.add_edges_from(sideagents_to_agents, inf = influence_agent_agent, tol = tolerance_agent_agent, upf = update_agent_agent, color = '#ffaa00')
+        result.graph.add_edges_from(agents_to_sideagents, inf = influence_agent_agent, tol = tolerance_agent_agent, upf = update_agent_agent, color = '#aaff00')
+        result.graph.add_edges_from(agents_to_agents, inf = influence_agent_agent, tol = tolerance_agent_agent, upf = update_agent_agent, color = '#ccffcc')
 
     return result
