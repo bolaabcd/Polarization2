@@ -8,7 +8,7 @@ FUNCTION = belief_update_fs.quadratic_update
 all_sims = (
     (
         scientists_buffer,
-        "scientists_buffer_comun_see_truth",
+        "scientists_buffer_comun_dont_see_truth",
         [
             10,# num_scientists : int,
             3,# num_comunicators : int, # extra scientists
@@ -94,7 +94,7 @@ all_sims = (
 
     (
         scientists_buffer,
-        "scientists_buffer_comun_dont_see_truth",
+        "scientists_buffer_comun_see_truth",
         [
             10,# num_scientists : int,
             3,# num_comunicators : int, # extra scientists
