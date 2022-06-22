@@ -552,39 +552,3 @@ def tripartite_two_influencers(
         result.graph.add_edge(2, 0, inf = influence_value_mid1, tol = tolerance_value_mid1, color = "#55ffff", upf = update_function)
         result.graph.add_edge(num_ags_middle + 1, 1, inf = influence_value_mid2, tol = tolerance_value_mid2, color = "#ffff55", upf = update_function)
     return result
-
-
-# many_graphs is a tuple: Gr and name of the graph
-# Gr is a list of parameters: (resulting_graphs,parameter)
-# resulting_graphs is a list of Society_graphs
-def simulate(many_graphs):
-    Gr, name = graph
-    Gr[0][0][0].draw_graph()
-    if not os.path.exists(f"./generated/{name}/"):
-        os.mkdir(f"./generated/{name}/")
-    if not os.path.exists(f"./generated/{name}/{name}.png"):
-        plt.savefig(f"./generated/{name}/{name}.png")
-    plt.close()
-    for i in cli.ProgressRange(len(Gr),"parameters"):
-        if os.path.exists(f"./generated/{name}/{Gr[i][1]}/"):
-            continue
-        for j in range(len(Gr[i][0])):
-            # Gr[i][0][j].quick_update(100)
-            for k in range(100):
-                Gr[i][0][j].update_beliefs()
-            Gr[i][0][j].plot_history()
-            file_name = f"./generated/{name}/{Gr[i][1]}/"
-            if not os.path.exists(file_name):
-                os.mkdir(file_name)
-            if not os.path.exists(file_name+f"{j}.png"):
-                plt.savefig(file_name+f"{j}.png")
-            plt.close()
-            Gr[i][0][j].plot_polarization()
-            file_name = f"./generated/{name}/pol_{Gr[i][1]}/"
-            if not os.path.exists(file_name):
-                os.mkdir(file_name)
-            if not os.path.exists(file_name+f"{j}.png"):
-                plt.xlim([0,len(Gr[i][0][j].polarization_history)-1])
-                plt.ylim([ 0,1])
-                plt.savefig(file_name+f"{j}.png")
-            plt.close()

@@ -46,6 +46,10 @@ def scientists_buffer(
         constant_agents_tol: bool = False,
         pol_measure : FunctionType = pol_ER_discretized
     ) -> Society_Graph:
+    # Simplifying later simulations
+    num_scientists = int(num_scientists)
+    num_comunicators = int(num_comunicators)
+    num_others = int(num_others)
     truth_node = Society_Graph(
         1,
         [bel_truth], 
@@ -121,17 +125,17 @@ def scientists_buffer(
     result.append(comunicators)
     result.append(others)
     if inf_truth_scientists != 0:
-        result.graph.add_edges_from(truth_to_scientists, inf = inf_truth_scientists, tol = tol_truth_scientists, upf = upf_truth_scientists)
+        result.graph.add_edges_from(truth_to_scientists, inf = inf_truth_scientists, tol = tol_truth_scientists, upf = upf_truth_scientists, color = "#ff2244")
         if comunicators_see_truth:
-            result.graph.add_edges_from(truth_to_comunicators, inf = inf_truth_scientists, tol = tol_truth_scientists, upf = upf_truth_scientists)
+            result.graph.add_edges_from(truth_to_comunicators, inf = inf_truth_scientists, tol = tol_truth_scientists, upf = upf_truth_scientists, color = "#ff4422")
     if inf_scientists_scientists != 0:
-        result.graph.add_edges_from(scientists_to_comunicators, inf = inf_scientists_scientists, tol = tol_scientists_scientists, upf = upf_scientists_scientists)
-        result.graph.add_edges_from(comunicators_to_scientists, inf = inf_scientists_scientists, tol = tol_scientists_scientists, upf = upf_scientists_scientists)
+        result.graph.add_edges_from(scientists_to_comunicators, inf = inf_scientists_scientists, tol = tol_scientists_scientists, upf = upf_scientists_scientists, color = "#ffdd22")
+        result.graph.add_edges_from(comunicators_to_scientists, inf = inf_scientists_scientists, tol = tol_scientists_scientists, upf = upf_scientists_scientists, color = "#ddff22")
     # print(result.graph.number_of_nodes(), 'a')
     if inf_scientists_others != 0:
-        result.graph.add_edges_from(comunicators_to_others, inf = inf_scientists_others, tol = tol_scientists_others, upf = upf_scientists_others)
+        result.graph.add_edges_from(comunicators_to_others, inf = inf_scientists_others, tol = tol_scientists_others, upf = upf_scientists_others, color = "#22dd77")
     if inf_others_scientists != 0:
-        result.graph.add_edges_from(others_to_scientists, inf = inf_others_scientists, tol = tol_others_scientists, upf = upf_others_scientists)
+        result.graph.add_edges_from(others_to_scientists, inf = inf_others_scientists, tol = tol_others_scientists, upf = upf_others_scientists, color = "#2277dd")
 
     return result
 

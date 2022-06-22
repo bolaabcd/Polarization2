@@ -25,6 +25,9 @@ def build_belief(belief_type: Belief_Type, num_agents : int, initval: float = 0,
         raise ValueError("Interval given ends before it begins.")
     dif = finval-initval
 
+    if num_agents == 1 and belief_type != Belief_Type.RANDOM:
+        return np.array([(initval + finval)/2])
+
     if belief_type is Belief_Type.MILD:
         middle = math.ceil(num_agents / 2)
         return np.array([initval+dif*(0.2 + 0.2 * i / middle) if i < middle else initval+dif*(0.6 + 0.2 * (i - middle) / (num_agents - middle)) for i in range(num_agents)], dtype = np.float64)

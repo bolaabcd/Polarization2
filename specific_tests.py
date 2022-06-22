@@ -5,7 +5,7 @@ import os
 from networkx.drawing import draw_networkx,multipartite_layout
 from sqlalchemy import false
 
-from belief_update_fs import quadratic_update, cubic_update, modulus_update
+from belief_update_fs import quadratic_update, cubic_update, modulus_update, slow_cubic, bad_exponential
 from default_beliefs import build_belief
 from default_influences import build_influence, Default_Influence
 from default_tolerances import build_tol_matrix_backfire
@@ -426,3 +426,24 @@ draw_networkx(
 # plt.show()
 plt.savefig("generated/specific_tests/" + name + '_graph.svg')
 plt.close()
+
+# Slow cubic
+name = "slow_cubic"
+if not os.path.exists("generated/specific_tests/" + name + '_ags.svg'):
+    Gr = simple_clique_uniform(3,slow_cubic,0,1,1,1)
+    Gr.quick_update(1000000)
+    plt.close()
+    Gr.plot_history()
+    # plt.show()
+    plt.savefig("generated/specific_tests/" + name + '_ags.svg')
+
+# Very slow function
+name = "very_slow_exponential"
+if not os.path.exists("generated/specific_tests/" + name + '_ags.svg'):
+    Gr = simple_clique_uniform(2,bad_exponential,0.0,1.0,1.0,1.0)
+    Gr.quick_update(1000000)
+    plt.close()
+    Gr.plot_history()
+    # plt.show()
+    plt.savefig("generated/specific_tests/" + name + '_ags.svg')
+    

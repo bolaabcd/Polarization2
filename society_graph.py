@@ -155,7 +155,15 @@ class Society_Graph:
 
     def quick_update(self, number_of_updates : int) -> None:
         n = self.num_agents
-        f0 = self.graph[0][1][UPDATE_F]
+
+        f0 = 0
+        ok = False
+        for ed in self.graph.edges:
+            f0 = self.graph[ed[0]][ed[1]][UPDATE_F]
+            ok = True
+            break
+        if not ok:
+            raise RuntimeError("Invalid state for quick_update: no edges.")
 
         for i in self.graph.nodes():
             for j in self.graph.predecessors(i):
