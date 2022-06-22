@@ -209,10 +209,11 @@ class Society_Graph:
             self.graph.add_node(i+n, color = other.nodes[i][COLOR], group = other.nodes[i][GROUP])
             self.set_belief(i+n, other.nodes[i][BELIEF_VALUE])
         for i,j in other.edges():
-            self.set_influence(i+n,j+n,other[i][j][INFLUENCE_VALUE])
-            self.graph[i+n][j+n][UPDATE_F] = other[i][j][UPDATE_F]
-            self.graph[i+n][j+n][TOLERANCE_VALUE] = other[i][j][TOLERANCE_VALUE]
-            self.graph[i+n][j+n][COLOR] = other[i][j][COLOR]
+            if other[i][j][INFLUENCE_VALUE] != 0:
+                self.set_influence(i+n,j+n,other[i][j][INFLUENCE_VALUE])
+                self.graph[i+n][j+n][UPDATE_F] = other[i][j][UPDATE_F]
+                self.graph[i+n][j+n][TOLERANCE_VALUE] = other[i][j][TOLERANCE_VALUE]
+                self.graph[i+n][j+n][COLOR] = other[i][j][COLOR]
         self.num_agents = self.graph.number_of_nodes()
         self.polarization_history = []
         self.belief_history = []

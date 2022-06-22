@@ -501,7 +501,7 @@ def tripartite_two_influencers(
     ):
     result = Society_Graph(
         2,
-        [blf1_value, blf2_value], 
+        [belief_value1, belief_value2], 
         np.full((2,2),0),
         default_fs.same(2,update_function), 
         [[1, 1], [1, 1]], 

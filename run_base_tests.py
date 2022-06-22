@@ -727,7 +727,6 @@ def simulate(many_sims, nframes = 100):
 					os.mkdir(f"generated/{name}/{names[i]}/ags/")
 				if not os.path.exists(f"generated/{name}/{names[i]}/pols/"):
 					os.mkdir(f"generated/{name}/{names[i]}/pols/")
-				print(name)
 				for j in ProgressRange(nframes):
 					if not os.path.exists(f"generated/{name}/{names[i]}/ags/{j}.jpg"):
 						defcopy = defaults.copy()
