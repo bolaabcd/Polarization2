@@ -13,7 +13,7 @@ import default_beliefs,default_fs,default_influences,default_tolerances,belief_u
 
 # truth influences scientists. Some scientists are science comunicators, who influence all of the others. The others may influence the scientists and themselves.
 def scientists_buffer(
-		# ammount of each class (1 truth always)
+        # ammount of each class (1 truth always)
         num_scientists : int,
         num_comunicators : int, # extra scientists
         num_others : int,
@@ -164,6 +164,12 @@ def many_sides(
         constant_agents_tol: bool = False,
         pol_measure : FunctionType = pol_ER_discretized
     ) -> Society_Graph:
+
+    # Simplifying later simulations
+    num_sides = int(num_sides)
+    num_agents_sides = np.array(num_agents_sides, dtype=np.int64)
+    num_neutral_agents = int(num_neutral_agents)
+
     sides = simple_clique_uniform(
         num_sides, # num_agents : int, 
         update_agent_agent, # function : FunctionType,
@@ -240,8 +246,8 @@ def many_sides(
         result.append(i)
     result.append(neutral_agents)
 
-    if influences_sides_agent != 0:
-        result.graph.add_edges_from(side_to_sideagents, inf = influences_sides_agent, tol = tolerances_sides_agent, upf = update_sides_agent, color = '#ff4444')
+    if influence_sides_agent != 0:
+        result.graph.add_edges_from(side_to_sideagents, inf = influence_sides_agent, tol = tolerance_sides_agent, upf = update_sides_agent, color = '#ff4444')
     if influence_agent_agent != 0:
         result.graph.add_edges_from(sideagents_to_agents, inf = influence_agent_agent, tol = tolerance_agent_agent, upf = update_agent_agent, color = '#ffaa00')
         result.graph.add_edges_from(agents_to_sideagents, inf = influence_agent_agent, tol = tolerance_agent_agent, upf = update_agent_agent, color = '#aaff00')

@@ -177,228 +177,63 @@ all_sims = (
             # pol_measure : FunctionType = pol_ER_discretized
         ],
     ),
+
+
+    (
+        many_sides,
+        "many_sides",
+        [
+            5,# num_sides : int,
+            [2 for i in range(5)],# num_agents_sides : int,
+            10,# num_neutral_agents : int,
+            1,# influence_sides_agent : np.float64,
+            0.5,# influence_agent_agent : np.float64,
+            FUNCTION,# update_sides_agent : np.float64,
+            FUNCTION,# update_agent_agent : np.float64,
+            1,# tolerance_sides_agent : np.float64,
+            1,# tolerance_agent_agent : np.float64,
+            0.1,# side_diff : np.float64,
+            0.3,# neutral_low : np.float64 = 0,
+            0.7,# neutral_high : np.float64 = 1,
+            # see_constant_agents: bool = True,
+            # constant_agents_tol: bool = False,
+            # pol_measure : FunctionType = pol_ER_discretized
+        ],
+        [
+            None,# num_sides : int,
+            None,# num_agents_sides : int,
+            (2,100),# num_neutral_agents : int,
+            (0,1),# influence_sides_agent : np.float64,
+            (0,1),# influence_agent_agent : np.float64,
+            None,# update_sides_agent : np.float64,
+            None,# update_agent_agent : np.float64,
+            (-1,1),# tolerance_sides_agent : np.float64,
+            (-1,1),# tolerance_agent_agent : np.float64,
+            None,# side_diff : np.float64,
+            None,# neutral_low : np.float64 = 0,
+            None,# neutral_high : np.float64 = 1,
+            # see_constant_agents: bool = True,
+            # constant_agents_tol: bool = False,
+            # pol_measure : FunctionType = pol_ER_discretized
+        ],
+        [
+            "num_sides",# : int,
+            "num_agents_sides",# : int,
+            "num_neutral_agents",# : int,
+            "influence_sides_agent",# : np.float64,
+            "influence_agent_agent",# : np.float64,
+            "update_sides_agent",# : np.float64,
+            "update_agent_agent",# : np.float64,
+            "tolerance_sides_agent",# : np.float64,
+            "tolerance_agent_agent",# : np.float64,
+            "side_diff",# : np.float64,
+            "neutral_low",# : np.float64 = 0,
+            "neutral_high",# : np.float64 = 1,
+            # see_constant_agents: bool = True,
+            # constant_agents_tol: bool = False,
+            # pol_measure : FunctionType = pol_ER_discretized
+        ],
+    ),
 )
 
-simulate(all_sims)
-
-# many_sides_param_list = []
-# print(1)
-# numsides = []
-# for i in range(100):
-#     gr = many_sides(
-# 	    ## number of sides, agents initially defending sides and neutral agents
-#         int(100*i/99+2),#num_sides,
-#         [2 for i in range(int(100*i/99+2))],#num_agents_sides,
-#         10,#num_neutral_agents,
-#         ## influences from the sides to agents, and from agent to agent
-#         1,#influences_sides_agent,
-#         0.5,#influence_agent_agent,
-#         ## update function
-#         FUNCTION,#agent_update,
-#         ## tolerances
-#         1,#in_tolerance_agent,
-#         1,#out_tolerance_agent,
-#         1,#out_tolerance_sides,
-#         ## value of agent defend side is side_value +- side_diff
-#         0.1,#side_diff,
-#         ## interval of belief values of neutral agents
-#         0.3,#neutral_low = 0,
-#         0.7,#neutral_high = 1,
-#         ## will we use backfire-effect? (or boomerang effect?)
-#         True,#is_backfire = True
-#         True# ignore_constant = False
-#     )
-#     numsides.append(gr)
-# many_sides_param_list.append((numsides,"numsides"+NAME))
-# sideinf = []
-# for i in range(100):
-#     gr = many_sides(
-#         ## number of sides, agents initially defending sides and neutral agents
-#         5,#num_sides,
-#         [2 for i in range(5)],#num_agents_sides,
-#         10,#num_neutral_agents,
-#         ## influences from the sides to agents, and from agent to agent
-#         i/99,#influences_sides_agent,
-#         0.5,#influence_agent_agent,
-#         ## update function
-#         FUNCTION,#agent_update,
-#         ## tolerances
-#         1,#in_tolerance_agent,
-#         1,#out_tolerance_agent,
-#         1,#out_tolerance_sides,
-#         ## value of agent defend side is side_value +- side_diff
-#         0.1,#side_diff,
-#         ## interval of belief values of neutral agents
-#         0.3,#neutral_low = 0,
-#         0.7,#neutral_high = 1,
-#         ## will we use backfire-effect? (or boomerang effect?)
-#         True,#is_backfire = True
-#         False# ignore_constant = False
-#     )
-#     sideinf.append(gr)
-# many_sides_param_list.append((sideinf,"sideinf"+NAME))
-# sideagentssize = []
-# for i in range(100):
-#     gr = many_sides(
-#         ## number of sides, agents initially defending sides and neutral agents
-#         5,#num_sides,
-#         [int(100*i/99+2) for j in range(5)],#num_agents_sides,
-#         10,#num_neutral_agents,
-#         ## influences from the sides to agents, and from agent to agent
-#         1,#influences_sides_agent,
-#         0.5,#influence_agent_agent,
-#         ## update function
-#         FUNCTION,#agent_update,
-#         ## tolerances
-#         1,#in_tolerance_agent,
-#         1,#out_tolerance_agent,
-#         1,#out_tolerance_sides,
-#         ## value of agent defend side is side_value +- side_diff
-#         0.1,#side_diff,
-#         ## interval of belief values of neutral agents
-#         0.3,#neutral_low = 0,
-#         0.7,#neutral_high = 1,
-#         ## will we use backfire-effect? (or boomerang effect?)
-#         True,#is_backfire = True
-#         False# ignore_constant = False
-#     )
-#     sideagentssize.append(gr)
-# many_sides_param_list.append((sideagentssize,"sideagentssize"+NAME))
-
-# backfire_agent = []
-# for i in range(100):
-#     gr = many_sides(
-# 	    ## number of sides, agents initially defending sides and neutral agents
-#         5,#num_sides,
-#         [2 for i in range(5)],#num_agents_sides,
-#         10,#num_neutral_agents,
-#         ## influences from the sides to agents, and from agent to agent
-#         1,#influences_sides_agent,
-#         0.5,#influence_agent_agent,
-#         ## update function
-#         FUNCTION,#agent_update,
-#         ## tolerances
-#         2*i/99-1,#in_tolerance_agent,
-#         1,#out_tolerance_agent,
-#         1,#out_tolerance_sides,
-#         ## value of agent defend side is side_value +- side_diff
-#         0.1,#side_diff,
-#         ## interval of belief values of neutral agents
-#         0.3,#neutral_low = 0,
-#         0.7,#neutral_high = 1,
-#         ## will we use backfire-effect? (or boomerang effect?)
-#         True,#is_backfire = True
-#         False# ignore_constant = False
-#     )
-#     backfire_agent.append(gr)
-# many_sides_param_list.append((backfire_agent,"backfire_agent"+NAME))
-# boomerang_agents = []
-# for i in range(100):
-#     gr = many_sides(
-#         ## number of sides, agents initially defending sides and neutral agents
-#         5,#num_sides,
-#         [2 for i in range(5)],#num_agents_sides,
-#         10,#num_neutral_agents,
-#         ## influences from the sides to agents, and from agent to agent
-#         1,#influences_sides_agent,
-#         0.5,#influence_agent_agent,
-#         ## update function
-#         FUNCTION,#agent_update,
-#         ## tolerances
-#         1,#in_tolerance_agent,
-#         2*i/99-1,#out_tolerance_agent,
-#         1,#out_tolerance_sides,
-#         ## value of agent defend side is side_value +- side_diff
-#         0.1,#side_diff,
-#         ## interval of belief values of neutral agents
-#         0.3,#neutral_low = 0,
-#         0.7,#neutral_high = 1,
-#         ## will we use backfire-effect? (or boomerang effect?)
-#         False,#is_backfire = True
-#         False# ignore_constant = False
-#     )
-#     boomerang_agents.append(gr)
-# many_sides_param_list.append((boomerang_agents,"boomerang_agents"+NAME))
-# boomerang_sides = []
-# for i in range(100):
-#     gr = many_sides(
-#         ## number of sides, agents initially defending sides and neutral agents
-#         5,#num_sides,
-#         [2 for i in range(5)],#num_agents_sides,
-#         10,#num_neutral_agents,
-#         ## influences from the sides to agents, and from agent to agent
-#         1,#influences_sides_agent,
-#         0.5,#influence_agent_agent,
-#         ## update function
-#         FUNCTION,#agent_update,
-#         ## tolerances
-#         1,#in_tolerance_agent,
-#         1,#out_tolerance_agent,
-#         2*i/99-1,#out_tolerance_sides,
-#         ## value of agent defend side is side_value +- side_diff
-#         0.1,#side_diff,
-#         ## interval of belief values of neutral agents
-#         0.3,#neutral_low = 0,
-#         0.7,#neutral_high = 1,
-#         ## will we use backfire-effect? (or boomerang effect?)
-#         False,#is_backfire = True
-#         False# ignore_constant = False
-#     )
-#     boomerang_sides.append(gr)
-# many_sides_param_list.append((boomerang_sides,"boomerang_sides"+NAME))
-# unilateral_amt = []
-# for i in range(100):
-#     gr = many_sides(
-#         ## number of sides, agents initially defending sides and neutral agents
-#         5,#num_sides,
-#         [int(100*i/99+2)]+[2 for i in range(4)],#num_agents_sides,
-#         10,#num_neutral_agents,
-#         ## influences from the sides to agents, and from agent to agent
-#         1,#influences_sides_agent,
-#         0.5,#influence_agent_agent,
-#         ## update function
-#         FUNCTION,#agent_update,
-#         ## tolerances
-#         1,#in_tolerance_agent,
-#         1,#out_tolerance_agent,
-#         1,#out_tolerance_sides,
-#         ## value of agent defend side is side_value +- side_diff
-#         0.1,#side_diff,
-#         ## interval of belief values of neutral agents
-#         0.3,#neutral_low = 0,
-#         0.7,#neutral_high = 1,
-#         ## will we use backfire-effect? (or boomerang effect?)
-#         True,#is_backfire = True
-#         False# ignore_constant = False
-#     )
-#     unilateral_amt.append(gr)
-# many_sides_param_list.append((unilateral_amt,"unilateral_amt"+NAME))
-# neutral_amt = []
-# for i in range(100):
-#     gr = many_sides(
-#         ## number of sides, agents initially defending sides and neutral agents
-#         5,#num_sides,
-#         [2 for i in range(5)],#num_agents_sides,
-#         int(100*i/99+2),#num_neutral_agents,
-#         ## influences from the sides to agents, and from agent to agent
-#         1,#influences_sides_agent,
-#         0.5,#influence_agent_agent,
-#         ## update function
-#         FUNCTION,#agent_update,
-#         ## tolerances
-#         1,#in_tolerance_agent,
-#         1,#out_tolerance_agent,
-#         1,#out_tolerance_sides,
-#         ## value of agent defend side is side_value +- side_diff
-#         0.1,#side_diff,
-#         ## interval of belief values of neutral agents
-#         0.3,#neutral_low = 0,
-#         0.7,#neutral_high = 1,
-#         ## will we use backfire-effect? (or boomerang effect?)
-#         True,#is_backfire = True
-#         False# ignore_constant = False
-#     )
-#     neutral_amt.append(gr)
-# many_sides_param_list.append((neutral_amt,"neutral_amt"+NAME))
-# simulate((many_sides_param_list,"many_sides"+NAME))
-# del many_sides_param_list
+simulate(all_sims, nsteps = 500)

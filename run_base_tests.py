@@ -303,8 +303,8 @@ all_sims = (
 	        1,# beleif_value_2 : np.float64,
 	        1,# influence_value_1mid : np.float64,
 	        1,# influence_value_2mid : np.float64,
-	        1,# influence_value_mid1 : np.float64,
-	        1,# influence_value_mid2 : np.float64,
+	        0.1,# influence_value_mid1 : np.float64,
+	        0.1,# influence_value_mid2 : np.float64,
 	        1,# tolerance_value_1mid : np.float64,
 	        1,# tolerance_value_2mid : np.float64,
 	        1,# tolerance_value_mid1 : np.float64,
@@ -427,7 +427,7 @@ all_sims = (
 	        1,# end_value_middle : np.float64, 
 	        1,# influence_value_middle : np.float64,
 	        1,# influence_value_1mid : np.float64,
-	        1,# influence_value_mid1 : np.float64,
+	        0.1,# influence_value_mid1 : np.float64,
 	        1,# tolerance_value_middle : np.float64,
 	        1,# tolerance_value_1mid : np.float64,
 	        1,# tolerance_value_mid1 : np.float64,
@@ -535,7 +535,7 @@ all_sims = (
 	        FUNCTION,# update_function : np.float64,
 	        1,# influence_value_mid : np.float64,
 	        1,# influence_value_1mid : np.float64,
-	        1,# influence_value_mid1 : np.float64,
+	        0.1,# influence_value_mid1 : np.float64,
 	        1,# tolerance_value_mid : np.float64,
 	        1,# tolerance_value_1mid : np.float64,
 	        1,# tolerance_value_mid1 : np.float64,
@@ -654,8 +654,8 @@ all_sims = (
 	        1,# influence_value_mid : np.float64,
 	        1,# influence_value_1mid : np.float64,
 	        1,# influence_value_2mid : np.float64,
-	        1,# influence_value_mid1 : np.float64,
-	        1,# influence_value_mid2 : np.float64,
+	        0.1,# influence_value_mid1 : np.float64,
+	        0.1,# influence_value_mid2 : np.float64,
 	        1,# tolerance_value_1mid : np.float64,
 	        1,# tolerance_value_2mid : np.float64,
 	        1,# tolerance_value_mid1 : np.float64,
@@ -709,7 +709,7 @@ all_sims = (
 	),
 )
 
-def simulate(many_sims, nframes = 100):
+def simulate(many_sims, nframes = 100, nsteps = 100):
 	if not os.path.exists("generated"):
 		os.mkdir("generated")
 	for maker, name, defaults, ranges, names in many_sims:
@@ -733,7 +733,7 @@ def simulate(many_sims, nframes = 100):
 						defcopy[i] = rangee[0] + (rangee[1]-rangee[0])*j/(nframes-1)
 						Gr = maker(*defcopy)
 						try:
-							Gr.quick_update(100)
+							Gr.quick_update(nsteps)
 						except:
 							pass
 						plt.close()
@@ -745,7 +745,7 @@ def simulate(many_sims, nframes = 100):
 						defcopy[i] = rangee[0] + (rangee[1]-rangee[0])*j/(nframes-1)
 						Gr = maker(*defcopy)
 						try:
-							Gr.quick_update(100)
+							Gr.quick_update(nsteps)
 						except:
 							pass
 						plt.close()
