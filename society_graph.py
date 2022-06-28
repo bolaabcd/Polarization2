@@ -122,6 +122,10 @@ class Society_Graph:
 
     def register_state(self) -> None: # only saves what can change in our model: the belief values and the polarization measure.
         blfs = self.get_beliefs()
+        # print(len(self.get_constant_agents()), self.num_agents, np.array(blfs)[self.get_valid_agents()].shape)
+        if np.array(blfs)[self.get_valid_agents()].shape[0] == 0:
+            return
+
         self.belief_history.append(np.array(blfs)[self.get_valid_agents()])
         ignore = []
         if not self.constant_agents_tol:
@@ -154,6 +158,7 @@ class Society_Graph:
         self.register_state()
 
     def quick_update(self, number_of_updates : int) -> None:
+        # print(self.belief_history)
         n = self.num_agents
 
         f0 = 0
@@ -175,7 +180,6 @@ class Society_Graph:
         tol_mat = nx.convert_matrix.to_numpy_array(self.graph, weight = TOLERANCE_VALUE) # sets to 1 if edge is not specified
         inf_mat = nx.convert_matrix.to_numpy_array(self.graph, weight = INFLUENCE_VALUE) # sets to 1 if edge is not specified
         neighbours = [np.count_nonzero(inf_mat[:, i]) for i, _ in enumerate(blf_mat)]
-        valids = self.get_valid_agents()
         for i in range(number_of_updates):
             diff = np.ones((len(blf_mat), 1)) @  np.asarray(blf_mat)[np.newaxis]
             diff = np.transpose(diff) - diff
@@ -186,6 +190,7 @@ class Society_Graph:
             blf_mat = np.clip(preAns,0,1) # preAns now contains B_i^{t+1}, for every agent i
             self.set_beliefs(np.ndarray.tolist(blf_mat))
             self.register_state()
+
 
     def get_constant_agents(self) -> np.ndarray:
         constant_agents = []
@@ -226,7 +231,6 @@ class Society_Graph:
             fig = plt.figure()
         if ax is None:
             ax = fig.add_subplot()
-        # print(self.belief_history)
         ax.plot(np.array(self.belief_history))
         for i,j in enumerate(ax.lines):
             j.set_color(self.graph.nodes[i][COLOR])

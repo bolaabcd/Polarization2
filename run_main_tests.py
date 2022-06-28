@@ -181,7 +181,7 @@ all_sims = (
 
     (
         many_sides,
-        "many_sides",
+        "many_sides_no_pol_const_ags",
         [
             5,# num_sides : int,
             [2 for i in range(5)],# num_agents_sides : int,
@@ -195,8 +195,8 @@ all_sims = (
             0.1,# side_diff : np.float64,
             0.3,# neutral_low : np.float64 = 0,
             0.7,# neutral_high : np.float64 = 1,
-            # see_constant_agents: bool = True,
-            # constant_agents_tol: bool = False,
+            False,# see_constant_agents: bool = True,
+            False,# constant_agents_tol: bool = False,
             # pol_measure : FunctionType = pol_ER_discretized
         ],
         [
@@ -212,8 +212,8 @@ all_sims = (
             None,# side_diff : np.float64,
             None,# neutral_low : np.float64 = 0,
             None,# neutral_high : np.float64 = 1,
-            # see_constant_agents: bool = True,
-            # constant_agents_tol: bool = False,
+            None,# see_constant_agents: bool = True,
+            None,# constant_agents_tol: bool = False,
             # pol_measure : FunctionType = pol_ER_discretized
         ],
         [
@@ -229,8 +229,64 @@ all_sims = (
             "side_diff",# : np.float64,
             "neutral_low",# : np.float64 = 0,
             "neutral_high",# : np.float64 = 1,
-            # see_constant_agents: bool = True,
-            # constant_agents_tol: bool = False,
+            "see_constant_agents",#: bool = True,
+            "constant_agents_tol",#: bool = False,
+            # pol_measure : FunctionType = pol_ER_discretized
+        ],
+    ),
+
+    (
+        many_sides,
+        "many_sides_const_ags",
+        [
+            5,# num_sides : int,
+            [2 for i in range(5)],# num_agents_sides : int,
+            10,# num_neutral_agents : int,
+            1,# influence_sides_agent : np.float64,
+            0.5,# influence_agent_agent : np.float64,
+            FUNCTION,# update_sides_agent : np.float64,
+            FUNCTION,# update_agent_agent : np.float64,
+            1,# tolerance_sides_agent : np.float64,
+            1,# tolerance_agent_agent : np.float64,
+            0.1,# side_diff : np.float64,
+            0.3,# neutral_low : np.float64 = 0,
+            0.7,# neutral_high : np.float64 = 1,
+            False,# see_constant_agents: bool = True,
+            True,# constant_agents_tol: bool = False,
+            # pol_measure : FunctionType = pol_ER_discretized
+        ],
+        [
+            None,# num_sides : int,
+            None,# num_agents_sides : int,
+            (2,100),# num_neutral_agents : int,
+            (0,1),# influence_sides_agent : np.float64,
+            (0,1),# influence_agent_agent : np.float64,
+            None,# update_sides_agent : np.float64,
+            None,# update_agent_agent : np.float64,
+            (-1,1),# tolerance_sides_agent : np.float64,
+            (-1,1),# tolerance_agent_agent : np.float64,
+            None,# side_diff : np.float64,
+            None,# neutral_low : np.float64 = 0,
+            None,# neutral_high : np.float64 = 1,
+            None,# see_constant_agents: bool = True,
+            None,# constant_agents_tol: bool = False,
+            # pol_measure : FunctionType = pol_ER_discretized
+        ],
+        [
+            "num_sides",# : int,
+            "num_agents_sides",# : int,
+            "num_neutral_agents",# : int,
+            "influence_sides_agent",# : np.float64,
+            "influence_agent_agent",# : np.float64,
+            "update_sides_agent",# : np.float64,
+            "update_agent_agent",# : np.float64,
+            "tolerance_sides_agent",# : np.float64,
+            "tolerance_agent_agent",# : np.float64,
+            "side_diff",# : np.float64,
+            "neutral_low",# : np.float64 = 0,
+            "neutral_high",# : np.float64 = 1,
+            "see_constant_agents",#: bool = True,
+            "constant_agents_tol",#: bool = False,
             # pol_measure : FunctionType = pol_ER_discretized
         ],
     ),

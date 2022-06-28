@@ -40,8 +40,8 @@ def simple_clique_consensus(
             node_colors_vector = [node_color for i in range(num_agents)],
             edge_colors_matrix = [[edge_color for i in range(num_agents)] for j in range(num_agents)],
             node_groups_vector = [group_num for i in range(num_agents)],
-            see_constant_agents = True,
-            constant_agents_tol = False,
+            see_constant_agents = see_constant_agents,
+            constant_agents_tol = constant_agents_tol,
             pol_measure = pol_measure
         )
 
@@ -69,8 +69,8 @@ def simple_clique_uniform(
             node_colors_vector = [node_color for i in range(num_agents)],
             edge_colors_matrix = [[edge_color for i in range(num_agents)] for j in range(num_agents)],
             node_groups_vector = [group_num for i in range(num_agents)],
-            see_constant_agents = True,
-            constant_agents_tol = False,
+            see_constant_agents = see_constant_agents,
+            constant_agents_tol = constant_agents_tol,
             pol_measure = pol_measure
         )
 
@@ -242,7 +242,7 @@ def clique_two_influencers_uniform(
         np.full((2,2),0.0),
         default_fs.same(2,update_function),
         [[1, 1], [1, 1]], 
-        node_colors_vector = ["#ff0000", "#00ff00"],
+        node_colors_vector = ["#ff0000", "#0000ff"],
         edge_colors_matrix = [["#ff3333" for i in range(2)] for j in range(2)],
         node_groups_vector = [0, 1],
         see_constant_agents = see_constant_agents,

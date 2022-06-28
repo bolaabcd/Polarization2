@@ -11,7 +11,7 @@ from default_influences import build_influence, Default_Influence
 from default_tolerances import build_tol_matrix_backfire
 from example_cases import simple_clique_uniform, all_edges
 from society_graph import Society_Graph
-from main_cases import scientists_buffer
+from main_cases import scientists_buffer, many_sides
 
 
 if not os.path.exists("generated/"):
@@ -141,9 +141,9 @@ plt.close()
 
 f1 = quadratic_update
 # tolv = 1 # not consensus
-tolv = -1/2 # consensus (except extremes)
+# tolv = -1/2 # consensus (except extremes)
 # tolv = -1/2-1/8-1/256-1/512-1/2**13-1/2**15 # as many time steps as wanted, groups reverse
-# tolv=-1/2-1/16-1/64-1/128-1/512 # 5 agents in the middle
+tolv=-1/2-1/16-1/64-1/128-1/512 # 5 agents in the middle
 # tolv=-1/2-1/8-1/256-1/512-1/2**13-1/2**15-1/2**16-1/2**20-1/2**22 # with 500 time steps
 # tolv = -3/4
 good_bf = Society_Graph(
@@ -154,9 +154,9 @@ good_bf = Society_Graph(
     [[1]],
 )
 
-botton_group = simple_clique_uniform(10,f1,0.1,0.3,tolv,1)
-middle_group = simple_clique_uniform(10,f1,0.4,0.6,tolv,1)
-top_group = simple_clique_uniform(10,f1,0.7,0.9,tolv,1)
+botton_group = simple_clique_uniform(5,f1,0.1,0.3,tolv,1)
+middle_group = simple_clique_uniform(5,f1,0.4,0.6,tolv,1)
+top_group = simple_clique_uniform(5,f1,0.7,0.9,tolv,1)
 last_one = Society_Graph(1,[1],np.array([[0]]),[[f1]],[[1]])
 
 # nx.set_node_attributes(good_bf.graph,1,"subset")
@@ -203,14 +203,14 @@ draw_networkx(
     pos = nx.shell_layout(good_bf.graph,[r2,list(r1)+list(r3),[0,lpos]]),
 )
 # plt.show()
-plt.savefig("generated/specific_tests/good_bf_graph.svg")
+plt.savefig("generated/specific_tests/good_bf5_graph.svg")
 
 
 plt.close()
 good_bf.quick_update(200)
 good_bf.plot_history()
 # plt.show()
-plt.savefig(f"generated/specific_tests/good_bf_ags_tol{tolv}.svg")
+plt.savefig(f"generated/specific_tests/good_bf5_ags_tol{tolv}.svg")
 
 print(good_bf.get_beliefs()[1], good_bf.get_beliefs()[r2[0]], good_bf.get_beliefs()[r3[0]])
 
@@ -219,7 +219,7 @@ good_bf.plot_polarization()
 siz = len(good_bf.polarization_history)
 plt.title(f"Final value = {good_bf.polarization_history[siz-1]}")
 # plt.show()
-plt.savefig(f"generated/specific_tests/good_bf_pol_tol{tolv}.svg")
+plt.savefig(f"generated/specific_tests/good_bf5_pol_tol{tolv}.svg")
 plt.close()
 
 
@@ -446,4 +446,111 @@ if not os.path.exists("generated/specific_tests/" + name + '_ags.svg'):
     Gr.plot_history()
     # plt.show()
     plt.savefig("generated/specific_tests/" + name + '_ags.svg')
-    
+
+
+# More time to see if it converges:
+f = quadratic_update
+name = "scientists_more_time"
+if not os.path.exists("generated/specific_tests/" + name + '_ags.svg'):
+    gr = scientists_buffer(
+        10,# num_scientists : int,
+        3,# num_comunicators : int, # extra scientists
+        20,# num_others : int,
+        1,# inf_truth_scientists : np.float64,
+        0.5,# inf_scientists_scientists : np.float64,
+        0.2,# inf_scientists_others : np.float64,
+        1.0,# inf_others_scientists : np.float64,
+        0.3,# inf_others_others : np.float64,
+        f,# upf_truth_scientists : FunctionType,
+        f,# upf_scientists_scientists : FunctionType,
+        f,# upf_scientists_others : FunctionType,
+        f,# upf_others_scientists : FunctionType,
+        f,# upf_others_others : FunctionType,
+        1,# tol_truth_scientists : np.float64,
+        1,# tol_scientists_scientists : np.float64,
+        1,# tol_scientists_others : np.float64,
+        1,# tol_others_scientists : np.float64,
+        1,# tol_others_others : np.float64,
+        (build_belief, (3/5,1)),# bel_scientists_distr : np.float64,
+        (build_belief, (0,1/4)),# bel_others_distr : np.float64,
+        1,# bel_truth : np.float64 = 1.0,
+        False,# comunicators_see_truth : bool = False,
+        # see_constant_agents: bool = True,
+        # constant_agents_tol: bool = False,
+        # pol_measure : FunctionType = pol_ER_discretized
+        )
+    gr.quick_update(10000)
+    plt.close()
+    gr.plot_history()
+    # plt.show()
+    plt.savefig("generated/specific_tests/" + name + "_ags.svg")
+    plt.close()
+    siz = len(gr.polarization_history)
+    gr.plot_polarization()
+    plt.title(f"Final value = {gr.polarization_history[siz-1]}")
+    # plt.show()
+    plt.savefig("generated/specific_tests/" + name + '_pol.svg')
+    plt.close()
+    if not os.path.exists("generated/specific_tests/" + name + "_graph.svg"):
+        gr.draw_graph()
+        # plt.show()
+        plt.savefig("generated/specific_tests/" + name + "_graph.svg")
+    plt.close()
+    x = np.linspace(-1,1)
+    y = f(x,1)
+    y = np.clip(y,-1,1)
+    plt.plot(x,y)
+    plt.plot(x,x)
+    plt.plot(x,np.zeros(x.shape))
+    plt.plot(np.zeros(y.shape),x)
+    # plt.show()
+    plt.savefig("generated/specific_tests/" + name + '_upf.svg')
+    plt.close()
+
+# Many sides influences
+f = quadratic_update
+name = "many_sides_see"
+gr = many_sides(
+    5,# num_sides : int,
+    [2 for i in range(5)],# num_agents_sides : int,
+    10,# num_neutral_agents : int,
+    1,# influence_sides_agent : np.float64,
+    0.5,# influence_agent_agent : np.float64,
+    f,# update_sides_agent : np.float64,
+    f,# update_agent_agent : np.float64,
+    1,# tolerance_sides_agent : np.float64,
+    1,# tolerance_agent_agent : np.float64,
+    0.1,# side_diff : np.float64,
+    0.3,# neutral_low : np.float64 = 0,
+    0.7,# neutral_high : np.float64 = 1,
+    # see_constant_agents: bool = True,
+    # constant_agents_tol: bool = False,
+    # pol_measure : FunctionType = pol_ER_discretized
+    )
+gr.quick_update(100)
+plt.close()
+gr.plot_history()
+# plt.show()
+plt.savefig("generated/specific_tests/" + name + "_ags.svg")
+plt.close()
+siz = len(gr.polarization_history)
+gr.plot_polarization()
+plt.title(f"Final value = {gr.polarization_history[siz-1]}")
+# plt.show()
+plt.savefig("generated/specific_tests/" + name + '_pol.svg')
+plt.close()
+if not os.path.exists("generated/specific_tests/" + name + "_graph.svg"):
+    gr.draw_graph()
+    # plt.show()
+    plt.savefig("generated/specific_tests/" + name + "_graph.svg")
+plt.close()
+x = np.linspace(-1,1)
+y = f(x,1)
+y = np.clip(y,-1,1)
+plt.plot(x,y)
+plt.plot(x,x)
+plt.plot(x,np.zeros(x.shape))
+plt.plot(np.zeros(y.shape),x)
+# plt.show()
+plt.savefig("generated/specific_tests/" + name + '_upf.svg')
+plt.close()

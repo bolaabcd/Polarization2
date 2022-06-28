@@ -176,7 +176,7 @@ def many_sides(
         0, # start_value : np.float64,
         1, # end_value : np.float64,
         tolerance_agent_agent, # tolerance_value : np.float64,
-        influence_agent_agent, # influence_value : np.float64,
+        0, # influence_value : np.float64,
         "#ff0000", # node_color : str = "tab:blue",
         "#000000", # edge_color : str = "tab:gray",
         0, # group_num : int = 0,
@@ -246,6 +246,7 @@ def many_sides(
         result.append(i)
     result.append(neutral_agents)
 
+    # print(np.array(result.belief_history))
     if influence_sides_agent != 0:
         result.graph.add_edges_from(side_to_sideagents, inf = influence_sides_agent, tol = tolerance_sides_agent, upf = update_sides_agent, color = '#ff4444')
     if influence_agent_agent != 0:

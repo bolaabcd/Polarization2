@@ -731,7 +731,9 @@ def simulate(many_sims, nframes = 100, nsteps = 100):
 					if not os.path.exists(f"generated/{name}/{names[i]}/ags/{j}.jpg"):
 						defcopy = defaults.copy()
 						defcopy[i] = rangee[0] + (rangee[1]-rangee[0])*j/(nframes-1)
+						# print("AAA\nAAAA")
 						Gr = maker(*defcopy)
+						# print("AAA\nAAAA")
 						try:
 							Gr.quick_update(nsteps)
 						except:
