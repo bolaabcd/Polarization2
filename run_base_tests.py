@@ -1,6 +1,8 @@
 from example_cases import *
 from cli_utils import ProgressRange
 
+import matplotlib.gridspec as gridspec
+
 FUNCTION = belief_update_fs.quadratic_update
 
 # society type -> parameter -> range
@@ -727,8 +729,10 @@ def simulate(many_sims, nframes = 100, nsteps = 100):
 					os.mkdir(f"generated/{name}/{names[i]}/ags/")
 				if not os.path.exists(f"generated/{name}/{names[i]}/pols/"):
 					os.mkdir(f"generated/{name}/{names[i]}/pols/")
+				if not os.path.exists(f"generated/{name}/{names[i]}/ags_pols/"):
+					os.mkdir(f"generated/{name}/{names[i]}/ags_pols/")
 				for j in ProgressRange(nframes):
-					if not os.path.exists(f"generated/{name}/{names[i]}/ags/{j}.jpg"):
+					if not os.path.exists(f"generated/{name}/{names[i]}/ags/{j}.svg"):
 						defcopy = defaults.copy()
 						defcopy[i] = rangee[0] + (rangee[1]-rangee[0])*j/(nframes-1)
 						# print("AAA\nAAAA")
@@ -740,9 +744,9 @@ def simulate(many_sims, nframes = 100, nsteps = 100):
 							pass
 						plt.close()
 						Gr.plot_history()
-						plt.savefig(f"generated/{name}/{names[i]}/ags/{j}.jpg")
+						plt.savefig(f"generated/{name}/{names[i]}/ags/{j}.svg")
 						plt.close()
-					if not os.path.exists(f"generated/{name}/{names[i]}/pols/{j}.jpg"):
+					if not os.path.exists(f"generated/{name}/{names[i]}/pols/{j}.svg"):
 						defcopy = defaults.copy()
 						defcopy[i] = rangee[0] + (rangee[1]-rangee[0])*j/(nframes-1)
 						Gr = maker(*defcopy)
@@ -752,7 +756,28 @@ def simulate(many_sims, nframes = 100, nsteps = 100):
 							pass
 						plt.close()
 						Gr.plot_polarization()
-						plt.savefig(f"generated/{name}/{names[i]}/pols/{j}.jpg")
+						plt.savefig(f"generated/{name}/{names[i]}/pols/{j}.svg")
+						plt.close()
+					if not os.path.exists(f"generated/{name}/{names[i]}/ags_pols/{j}.svg"):
+						defcopy = defaults.copy()
+						defcopy[i] = rangee[0] + (rangee[1]-rangee[0])*j/(nframes-1)
+						Gr = maker(*defcopy)
+						try:
+							Gr.quick_update(nsteps)
+						except:
+							pass
+						plt.close()
+						
+						fig = plt.figure()
+						gs = gridspec.GridSpec(3, 1, figure=fig, hspace=0)
+						axt = fig.add_subplot(gs[:-1, :])
+						axb = fig.add_subplot(gs[-1, :], sharex=axt)
+						Gr.plot_history(ax = axt, fig = fig)
+						axt.set_ylabel("Belief")
+						Gr.plot_polarization(ax = axb, fig = fig, color = "black")
+						axb.set_ylabel("Polarization")
+						axb.set_xlabel("Time")
+						fig.savefig(f"generated/{name}/{names[i]}/ags_pols/{j}.svg")
 						plt.close()
 
 if __name__ == "__main__":
