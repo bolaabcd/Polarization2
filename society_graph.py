@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import networkx as nx
 from types import FunctionType
@@ -60,7 +61,7 @@ class Society_Graph:
         self.set_nodes(initial_belief_vector, node_colors_vector, node_groups_vector)
         self.set_edges(initial_influence_matrix, edge_colors_matrix, initial_tolerance_matrix, initial_fs_matrix)
 
-        
+        self.register_state()
         
         # self.set_beliefs(np.array(initial_belief_vector))
         # self.set_influences(np.array(initial_influence_matrix), np.array(edge_colors_matrix))
@@ -231,6 +232,7 @@ class Society_Graph:
             fig = plt.figure()
         if ax is None:
             ax = fig.add_subplot()
+        ax.set_ylim(0,1)
         ax.plot(np.array(self.belief_history))
         for i,j in enumerate(ax.lines):
             j.set_color(self.graph.nodes[i][COLOR])
@@ -243,8 +245,30 @@ class Society_Graph:
             fig = plt.figure()
         if ax is None:
             ax = fig.add_subplot()
+        ax.set_ylim(0,1)
         ax.plot(np.array(self.polarization_history), color = color)
         return ax, fig
+	
+    def plot_hist_pol(self, axt : plt.Axes = None, axb : plt.Axes = None, fig : plt.Figure = None, color : str = 'tab:blue') -> (plt.Axes, plt.Figure):
+        if fig is None and axb is not None and axt is not None:
+            raise ValueError("Invalid values: matplotlib axes specified, but figure not specified.")
+        if fig is None:
+            fig = plt.figure()
+        if axb is None or axt is None:
+            gs = gridspec.GridSpec(3, 1, figure=fig, hspace=0)
+            axt = fig.add_subplot(gs[:-1, :])
+            axb = fig.add_subplot(gs[-1, :], sharex=axt)
+        axb.set_ylim(0,1)
+        axt.set_ylim(0,1)
+        axt.tick_params(axis='y',colors = 'tab:blue')
+        axt.set_yticks([0.2,0.4,0.6,0.8,1])
+        axb.tick_params(axis='y', colors = '#770000')
+        self.plot_history(ax = axt, fig = fig)
+        axt.set_ylabel("Belief")
+        self.plot_polarization(ax = axb, fig = fig, color = "#770000")
+        axb.set_ylabel("Polarization")
+        axb.set_xlabel("Time")
+        return axb, axt, fig
 
     def draw_graph(self) -> None:
         nx.draw(
