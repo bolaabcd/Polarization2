@@ -416,7 +416,7 @@ def tripartite_one_influencer(
         num_ags_middle : int,
         belief_value1 : np.float64,
         belief_value2 : np.float64,
-        update_function : np.float64,
+        update_function : FunctionType,
         influence_value_mid : np.float64,
         influence_value_1mid : np.float64,
         influence_value_mid1 : np.float64,
@@ -483,7 +483,7 @@ def tripartite_two_influencers(
         num_ags_middle : int,
         belief_value1 : np.float64,
         belief_value2 : np.float64,
-        update_function : np.float64,
+        update_function : FunctionType,
         influence_value_mid : np.float64,
         influence_value_1mid : np.float64,
         influence_value_2mid : np.float64,
@@ -552,3 +552,94 @@ def tripartite_two_influencers(
         result.graph.add_edge(2, 0, inf = influence_value_mid1, tol = tolerance_value_mid1, color = "#55ffff", upf = update_function)
         result.graph.add_edge(num_ags_middle + 1, 1, inf = influence_value_mid2, tol = tolerance_value_mid2, color = "#ffff55", upf = update_function)
     return result
+
+def tripartite_uniform(
+    num_agents : int,
+    belief_value1 : np.float64,
+    belief_value2 : np.float64,
+    function : FunctionType,
+    influence_value_1 : np.float64,
+    influence_value_mid : np.float64,
+    influence_value_2 : np.float64,
+    tolerance_value_1 : np.float64,
+    tolerance_value_mid : np.float64,
+    tolerance_value_2 : np.float64,
+    influence_value_1mid : np.float64,
+    influence_value_2mid : np.float64,
+    influence_value_mid1 : np.float64,
+    influence_value_mid2 : np.float64,
+    tolerance_value_1mid : np.float64,
+    tolerance_value_2mid : np.float64,
+    tolerance_value_mid1 : np.float64,
+    tolerance_value_mid2 : np.float64,
+    see_constant_agents: bool = True,
+    constant_agents_tol: bool = False,
+    pol_measure : FunctionType = pol_ER_discretized
+):
+        size1 = num_agents//3
+        size2 = num_agents-2*size1
+        size3 = size1
+        
+        bfive = (belief_value2-belief_value1)/5
+        bin1 = belief_value1
+        bfin1 = belief_value1+bfive
+        bin2 = belief_value1+2*bfive
+        bfin2 = belief_value1+3*bfive
+        bin3 = belief_value1+4*bfive
+        bfin3 = belief_value2
+
+        group1 = simple_clique_uniform(
+            size1,
+            function,
+            bin1,
+            bfin1,
+            tolerance_value_1,
+            influence_value_1,
+            node_color = "#aa2222",
+            edge_color = "#aa2222",
+            group_num = 0,
+            see_constant_agents = see_constant_agents,
+            constant_agents_tol = constant_agents_tol,
+            pol_measure  = pol_measure
+        )
+        group2 = simple_clique_uniform(
+            size2,
+            function,
+            bin2,
+            bfin2,
+            tolerance_value_mid,
+            influence_value_mid,
+            node_color = "#22aa22",
+            edge_color = "#22aa22",
+            group_num = 1,
+            see_constant_agents = see_constant_agents,
+            constant_agents_tol = constant_agents_tol,
+            pol_measure  = pol_measure
+        )
+        group3 = simple_clique_uniform(
+            size3,
+            function,
+            bin3,
+            bfin3,
+            tolerance_value_2,
+            influence_value_2,
+            node_color = "#2222aa",
+            edge_color = "#2222aa",
+            group_num = 2,
+            see_constant_agents = see_constant_agents,
+            constant_agents_tol = constant_agents_tol,
+            pol_measure  = pol_measure
+        )
+
+        group1.append(group2.graph)
+        group1.append(group3.graph)
+        edges12 = all_edges(range(size1), range(size1, size1 + size2))
+        edges21 = all_edges(range(size1, size1 + size2), range(size1))
+        edges23 = all_edges(range(size1, size1 + size2), range(size1 + size2, size1 + size2 + size3))
+        edges32 = all_edges(range(size1 + size2, size1 + size2 + size3), range(size1, size1 + size2))
+        group1.graph.add_edges_from(edges12, inf = influence_value_1mid, tol = tolerance_value_1mid, color = "#aa0000", upf = function)
+        group1.graph.add_edges_from(edges32, inf = influence_value_2mid, tol = tolerance_value_2mid, color = "#0000aa", upf = function) 
+        group1.graph.add_edges_from(edges21, inf = influence_value_mid1, tol = tolerance_value_mid1, color = "#00aa00", upf = function)
+        group1.graph.add_edges_from(edges23, inf = influence_value_mid2, tol = tolerance_value_mid2, color = "#00aa00", upf = function) 
+        return group1
+
