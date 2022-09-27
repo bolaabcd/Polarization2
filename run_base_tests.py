@@ -767,17 +767,8 @@ def simulate(many_sims, nframes = 100, nsteps = 100):
 						except:
 							pass
 						plt.close()
-						
-						fig = plt.figure()
-						gs = gridspec.GridSpec(3, 1, figure=fig, hspace=0)
-						axt = fig.add_subplot(gs[:-1, :])
-						axb = fig.add_subplot(gs[-1, :], sharex=axt)
-						Gr.plot_history(ax = axt, fig = fig)
-						axt.set_ylabel("Belief")
-						Gr.plot_polarization(ax = axb, fig = fig, color = "black")
-						axb.set_ylabel("Polarization")
-						axb.set_xlabel("Time")
-						fig.savefig(f"generated/{name}/{names[i]}/ags_pols/{j}.svg")
+						Gr.plot_hist_pol()
+						plt.savefig(f"generated/{name}/{names[i]}/ags_pols/{j}.svg")
 						plt.close()
 
 if __name__ == "__main__":
