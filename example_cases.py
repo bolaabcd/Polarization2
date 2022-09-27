@@ -595,8 +595,8 @@ def tripartite_uniform(
             bfin1,
             tolerance_value_1,
             influence_value_1,
-            node_color = "#aa2222",
-            edge_color = "#aa2222",
+            node_color = "#D81B60",
+            edge_color = "#D81B60",
             group_num = 0,
             see_constant_agents = see_constant_agents,
             constant_agents_tol = constant_agents_tol,
@@ -609,8 +609,8 @@ def tripartite_uniform(
             bfin2,
             tolerance_value_mid,
             influence_value_mid,
-            node_color = "#22aa22",
-            edge_color = "#22aa22",
+            node_color = "#FFC107",
+            edge_color = "#FFC107",
             group_num = 1,
             see_constant_agents = see_constant_agents,
             constant_agents_tol = constant_agents_tol,
@@ -623,8 +623,8 @@ def tripartite_uniform(
             bfin3,
             tolerance_value_2,
             influence_value_2,
-            node_color = "#2222aa",
-            edge_color = "#2222aa",
+            node_color = "#1E88E5",
+            edge_color = "#1E88E5",
             group_num = 2,
             see_constant_agents = see_constant_agents,
             constant_agents_tol = constant_agents_tol,
@@ -637,9 +637,9 @@ def tripartite_uniform(
         edges21 = all_edges(range(size1, size1 + size2), range(size1))
         edges23 = all_edges(range(size1, size1 + size2), range(size1 + size2, size1 + size2 + size3))
         edges32 = all_edges(range(size1 + size2, size1 + size2 + size3), range(size1, size1 + size2))
-        group1.graph.add_edges_from(edges12, inf = influence_value_1mid, tol = tolerance_value_1mid, color = "#aa0000", upf = function)
-        group1.graph.add_edges_from(edges32, inf = influence_value_2mid, tol = tolerance_value_2mid, color = "#0000aa", upf = function) 
-        group1.graph.add_edges_from(edges21, inf = influence_value_mid1, tol = tolerance_value_mid1, color = "#00aa00", upf = function)
-        group1.graph.add_edges_from(edges23, inf = influence_value_mid2, tol = tolerance_value_mid2, color = "#00aa00", upf = function) 
+        group1.graph.add_edges_from(edges12, inf = influence_value_1mid, tol = tolerance_value_1mid, color = "#004D40", upf = function)
+        group1.graph.add_edges_from(edges32, inf = influence_value_2mid, tol = tolerance_value_2mid, color = "#004D40", upf = function) 
+        group1.graph.add_edges_from(edges21, inf = influence_value_mid1, tol = tolerance_value_mid1, color = "#004D40", upf = function)
+        group1.graph.add_edges_from(edges23, inf = influence_value_mid2, tol = tolerance_value_mid2, color = "#004D40", upf = function) 
         return group1
 
