@@ -69,7 +69,7 @@ plt.close()
 cbias.plot_history()
 plt.savefig("generated/paper/hist_cbias.svg")
 plt.close()
-cbias.plot_history()
+cbias.plot_polarization()
 plt.savefig("generated/paper/pol_cbias.svg")
 plt.close()
 cbias.plot_hist_pol()
@@ -100,7 +100,7 @@ plt.close()
 reac.plot_history()
 plt.savefig("generated/paper/hist_reac.svg")
 plt.close()
-reac.plot_history()
+reac.plot_polarization()
 plt.savefig("generated/paper/pol_reac.svg")
 plt.close()
 reac.plot_hist_pol()
@@ -130,7 +130,7 @@ plt.close()
 supsuc.plot_history()
 plt.savefig("generated/paper/hist_supsuc.svg")
 plt.close()
-supsuc.plot_history()
+supsuc.plot_polarization()
 plt.savefig("generated/paper/pol_supsuc.svg")
 plt.close()
 supsuc.plot_hist_pol()
@@ -180,7 +180,7 @@ plt.close()
 authbias.plot_history()
 plt.savefig("generated/paper/hist_authbias.svg")
 plt.close()
-authbias.plot_history()
+authbias.plot_polarization()
 plt.savefig("generated/paper/pol_authbias.svg")
 plt.close()
 authbias.plot_hist_pol()
@@ -216,7 +216,7 @@ plt.close()
 cbias2.plot_history()
 plt.savefig("generated/paper/hist_cbias2.svg")
 plt.close()
-cbias2.plot_history()
+cbias2.plot_polarization()
 plt.savefig("generated/paper/pol_cbias2.svg")
 plt.close()
 cbias2.plot_hist_pol()
@@ -252,7 +252,7 @@ plt.close()
 bfeffect.plot_history()
 plt.savefig("generated/paper/hist_bfeffect.svg")
 plt.close()
-bfeffect.plot_history()
+bfeffect.plot_polarization()
 plt.savefig("generated/paper/pol_bfeffect.svg")
 plt.close()
 bfeffect.plot_hist_pol()
@@ -288,7 +288,7 @@ plt.close()
 boomeffect.plot_history()
 plt.savefig("generated/paper/hist_boomeffect.svg")
 plt.close()
-boomeffect.plot_history()
+boomeffect.plot_polarization()
 plt.savefig("generated/paper/pol_boomeffect.svg")
 plt.close()
 boomeffect.plot_hist_pol()
@@ -324,9 +324,94 @@ plt.close()
 puppeteffect.plot_history()
 plt.savefig("generated/paper/hist_puppeteffect.svg")
 plt.close()
-puppeteffect.plot_history()
+puppeteffect.plot_polarization()
 plt.savefig("generated/paper/pol_puppeteffect.svg")
 plt.close()
 puppeteffect.plot_hist_pol()
 plt.savefig("generated/paper/hp_puppeteffect.svg")
+plt.close()
+
+#10 Scientists Buffer (30 steps)
+func = non_norm_quadratic_update
+scbuffer30 = scientists_buffer (
+    ## ammount of each class (1 truth always)
+    7,#num_scientists,
+    3,#num_comunicators, # extra scientists
+    10,#num_others,
+    ## influence values
+    1,#inf_truth_scientists,
+    1,#inf_scientists_scientists,
+    1,#inf_scientists_others,
+    1,#inf_others_scientists,
+    1,#inf_others_others,
+    ## update functions
+    func,#upf_truth_scientists,
+    func,#upf_scientists_scientists,
+    func,#upf_scientists_others,
+    func,#upf_others_scientists,
+    func,#upf_others_others,
+    ## tolerance values
+    0,#tol_truth_scientists,
+    0,#tol_scientists_scientists,
+    0,#tol_scientists_others,
+    0,#tol_others_scientists,
+    0,#tol_others_others,
+    ## belief values
+    (build_belief,(0.6,0.8)),#bel_scientists_distr,
+    (build_belief,(0.0,0.4)),#bel_others_distr,
+    constant_agents_tol = True,
+    random_others = True,#random_others = False
+)
+scbuffer30.quick_update(30)
+plt.close()
+scbuffer30.plot_history()
+plt.savefig("generated/paper/hist_scbuffer30.svg")
+plt.close()
+scbuffer30.plot_polarization()
+plt.savefig("generated/paper/pol_scbuffer30.svg")
+plt.close()
+scbuffer30.plot_hist_pol()
+plt.savefig("generated/paper/hp_scbuffer30.svg")
+plt.close()
+#11 Scientists Buffer (1000 steps)
+func = non_norm_quadratic_update
+scbuffer1000 = scientists_buffer (
+    ## ammount of each class (1 truth always)
+    7,#num_scientists,
+    3,#num_comunicators, # extra scientists
+    10,#num_others,
+    ## influence values
+    1,#inf_truth_scientists,
+    1,#inf_scientists_scientists,
+    1,#inf_scientists_others,
+    1,#inf_others_scientists,
+    1,#inf_others_others,
+    ## update functions
+    func,#upf_truth_scientists,
+    func,#upf_scientists_scientists,
+    func,#upf_scientists_others,
+    func,#upf_others_scientists,
+    func,#upf_others_others,
+    ## tolerance values
+    0,#tol_truth_scientists,
+    0,#tol_scientists_scientists,
+    0,#tol_scientists_others,
+    0,#tol_others_scientists,
+    0,#tol_others_others,
+    ## belief values
+    (build_belief,(0.6,0.8)),#bel_scientists_distr,
+    (build_belief,(0.0,0.4)),#bel_others_distr,
+    constant_agents_tol = True,
+    random_others = True,#random_others = False
+)
+scbuffer1000.quick_update(1000)
+plt.close()
+scbuffer1000.plot_history()
+plt.savefig("generated/paper/hist_scbuffer1000.svg")
+plt.close()
+scbuffer1000.plot_polarization()
+plt.savefig("generated/paper/pol_scbuffer1000.svg")
+plt.close()
+scbuffer1000.plot_hist_pol()
+plt.savefig("generated/paper/hp_scbuffer1000.svg")
 plt.close()

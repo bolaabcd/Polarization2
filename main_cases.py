@@ -7,7 +7,7 @@ from types import FunctionType
 
 from example_cases import all_edges, simple_clique_uniform
 from polarization_measure import pol_ER_discretized
-from society_graph import Society_Graph
+from society_graph import Society_Graph, INFLUENCE_VALUE, TOLERANCE_VALUE
 import cli_utils as cli
 import default_beliefs,default_fs,default_influences,default_tolerances,belief_update_fs
 
@@ -44,7 +44,8 @@ def scientists_buffer(
         # post-simulation settings
         see_constant_agents: bool = True,
         constant_agents_tol: bool = False,
-        pol_measure : FunctionType = pol_ER_discretized
+        pol_measure : FunctionType = pol_ER_discretized,
+        random_others : bool = False
     ) -> Society_Graph:
     # Simplifying later simulations
     num_scientists = int(num_scientists)
@@ -108,6 +109,11 @@ def scientists_buffer(
         constant_agents_tol = constant_agents_tol,
         pol_measure  = pol_measure
     )
+    if random_others:
+        for e in others.graph.edges:
+            others.graph[e[0]][e[1]][TOLERANCE_VALUE] = np.random.random()*2-1
+            others.graph[e[0]][e[1]][INFLUENCE_VALUE] = np.random.random()
+
     size4 = num_others
 
     truth_to_scientists = all_edges(range(size1), range(size1, size1 + size2))
@@ -137,6 +143,10 @@ def scientists_buffer(
     if inf_others_scientists != 0:
         result.graph.add_edges_from(others_to_scientists, inf = inf_others_scientists, tol = tol_others_scientists, upf = upf_others_scientists, color = "#2277dd")
 
+    if random_others:
+        for e in comunicators_to_others:
+            result.graph[e[0]][e[1]][TOLERANCE_VALUE] = np.random.random()*2-1
+            result.graph[e[0]][e[1]][INFLUENCE_VALUE] = np.random.random()
     return result
 
 
