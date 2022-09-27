@@ -57,8 +57,8 @@ def scientists_buffer(
         np.full((1,1),0),
         default_fs.same(1,upf_truth_scientists),
         [[1]], 
-        node_colors_vector  = ["#ff0000"],
-        edge_colors_matrix  = [["#ff0000"]],
+        node_colors_vector  = ["#D81B60"],
+        edge_colors_matrix  = [["#D81B60"]],
         node_groups_vector  = [0],
         see_constant_agents = see_constant_agents,
         constant_agents_tol = constant_agents_tol,
@@ -72,8 +72,8 @@ def scientists_buffer(
         default_influences.build_inf_graph_clique(num_scientists, inf_scientists_scientists),
         default_fs.same(num_scientists, upf_scientists_scientists),
         default_tolerances.build_tol_matrix_constant(num_scientists, tol_scientists_scientists),
-        node_colors_vector  = np.full(num_scientists, "#ff4444"),
-        edge_colors_matrix  = np.full((num_scientists, num_scientists), "#ff7777"),
+        node_colors_vector  = np.full(num_scientists, "#D81B60"),
+        edge_colors_matrix  = np.full((num_scientists, num_scientists), "#D81B60"),
         node_groups_vector  = np.full(num_scientists, 1),
         see_constant_agents = see_constant_agents,
         constant_agents_tol = constant_agents_tol,
@@ -87,8 +87,8 @@ def scientists_buffer(
         default_influences.build_inf_graph_clique(num_comunicators, inf_scientists_scientists),
         default_fs.same(num_comunicators, upf_scientists_scientists),
         default_tolerances.build_tol_matrix_constant(num_comunicators, tol_scientists_scientists),
-        node_colors_vector  = np.full(num_comunicators, "#4444ff"),
-        edge_colors_matrix  = np.full((num_comunicators, num_comunicators), "#7777ff"),
+        node_colors_vector  = np.full(num_comunicators, "#1E88E5"),
+        edge_colors_matrix  = np.full((num_comunicators, num_comunicators), "#1E88E5"),
         node_groups_vector  = np.full(num_comunicators, 2),
         see_constant_agents = see_constant_agents,
         constant_agents_tol = constant_agents_tol,
@@ -97,13 +97,12 @@ def scientists_buffer(
     size3 = num_comunicators
 
     others = Society_Graph(
-        num_others,
-        bel_others_distr[0](default_beliefs.Belief_Type.UNIFORM, num_others, *(bel_others_distr[1])),
+        num_others, bel_others_distr[0](default_beliefs.Belief_Type.UNIFORM, num_others, *(bel_others_distr[1])),
         default_influences.build_inf_graph_clique(num_others, inf_others_others),
         default_fs.same(num_others,upf_others_others),
         default_tolerances.build_tol_matrix_constant(num_others, tol_others_others),
-        node_colors_vector  = np.full(num_others, "#44ff44"),
-        edge_colors_matrix  = np.full((num_others, num_others), "#77ff77"),
+        node_colors_vector  = np.full(num_others, "#FFC107"),
+        edge_colors_matrix  = np.full((num_others, num_others), "#FFC107"),
         node_groups_vector  = np.full(num_others, 3),
         see_constant_agents = see_constant_agents,
         constant_agents_tol = constant_agents_tol,
@@ -131,17 +130,17 @@ def scientists_buffer(
     result.append(comunicators)
     result.append(others)
     if inf_truth_scientists != 0:
-        result.graph.add_edges_from(truth_to_scientists, inf = inf_truth_scientists, tol = tol_truth_scientists, upf = upf_truth_scientists, color = "#ff2244")
+        result.graph.add_edges_from(truth_to_scientists, inf = inf_truth_scientists, tol = tol_truth_scientists, upf = upf_truth_scientists, color = "#D81B60")
         if comunicators_see_truth:
-            result.graph.add_edges_from(truth_to_comunicators, inf = inf_truth_scientists, tol = tol_truth_scientists, upf = upf_truth_scientists, color = "#ff4422")
+            result.graph.add_edges_from(truth_to_comunicators, inf = inf_truth_scientists, tol = tol_truth_scientists, upf = upf_truth_scientists, color = "#D81B60")
     if inf_scientists_scientists != 0:
-        result.graph.add_edges_from(scientists_to_comunicators, inf = inf_scientists_scientists, tol = tol_scientists_scientists, upf = upf_scientists_scientists, color = "#ffdd22")
-        result.graph.add_edges_from(comunicators_to_scientists, inf = inf_scientists_scientists, tol = tol_scientists_scientists, upf = upf_scientists_scientists, color = "#ddff22")
+        result.graph.add_edges_from(scientists_to_comunicators, inf = inf_scientists_scientists, tol = tol_scientists_scientists, upf = upf_scientists_scientists, color = "#004D40")
+        result.graph.add_edges_from(comunicators_to_scientists, inf = inf_scientists_scientists, tol = tol_scientists_scientists, upf = upf_scientists_scientists, color = "#004D40")
     # print(result.graph.number_of_nodes(), 'a')
     if inf_scientists_others != 0:
-        result.graph.add_edges_from(comunicators_to_others, inf = inf_scientists_others, tol = tol_scientists_others, upf = upf_scientists_others, color = "#22dd77")
+        result.graph.add_edges_from(comunicators_to_others, inf = inf_scientists_others, tol = tol_scientists_others, upf = upf_scientists_others, color = "#004D40")
     if inf_others_scientists != 0:
-        result.graph.add_edges_from(others_to_scientists, inf = inf_others_scientists, tol = tol_others_scientists, upf = upf_others_scientists, color = "#2277dd")
+        result.graph.add_edges_from(others_to_scientists, inf = inf_others_scientists, tol = tol_others_scientists, upf = upf_others_scientists, color = "#004D40")
 
     if random_others:
         for e in comunicators_to_others:

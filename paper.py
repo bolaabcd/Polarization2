@@ -9,7 +9,7 @@ from default_beliefs import build_belief, Belief_Type
 from default_influences import build_influence, Default_Influence
 from default_tolerances import build_tol_matrix_backfire
 from example_cases import simple_clique_uniform, tripartite_uniform
-from society_graph import Society_Graph, INFLUENCE_VALUE
+from society_graph import Society_Graph, INFLUENCE_VALUE, COLOR
 from main_cases import scientists_buffer, many_sides
 
 np.random.seed(123456)
@@ -333,11 +333,14 @@ plt.close()
 
 #10 Scientists Buffer (30 steps)
 func = non_norm_quadratic_update
+nsc = 7 # scientists
+ncom = 3 # comunicators
+num = 10 # others
 scbuffer30 = scientists_buffer (
     ## ammount of each class (1 truth always)
-    7,#num_scientists,
-    3,#num_comunicators, # extra scientists
-    10,#num_others,
+    nsc,#num_scientists,
+    ncom,#num_comunicators, # extra scientists
+    num,#num_others,
     ## influence values
     1,#inf_truth_scientists,
     1,#inf_scientists_scientists,
@@ -362,6 +365,23 @@ scbuffer30 = scientists_buffer (
     constant_agents_tol = True,
     random_others = True,#random_others = False
 )
+draw_networkx(
+    scbuffer30.graph,
+    node_color = [scbuffer30.graph.nodes[n][COLOR] for n in scbuffer30.graph.nodes],
+    edge_color = [scbuffer30.graph[e[0]][e[1]][COLOR] for e in scbuffer30.graph.edges],
+    with_labels = False,
+    pos = multipartite_layout(scbuffer30.graph, subset_key = "group"),
+    # node_size = 30, # 300
+    # arrowsize = 3, # 10
+    linewidths = 0.1 # 1.0
+)
+#scbuffer30.draw_graph()
+plt.savefig("generated/paper/sc_buffer.svg")
+plt.close()
+scbuffer30.draw_graph()
+plt.savefig("generated/paper/sc_buffer_bad_plot.svg")
+plt.close()
+
 scbuffer30.quick_update(30)
 plt.close()
 scbuffer30.plot_history()
