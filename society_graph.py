@@ -232,7 +232,7 @@ class Society_Graph:
             fig = plt.figure()
         if ax is None:
             ax = fig.add_subplot()
-        ax.set_ylim(0,1)
+        ax.set_ylim(-0.02,1.02)
         ax.plot(np.array(self.belief_history))
         valid_ags_list = np.array(range(self.num_agents))[self.get_valid_agents()]
         for i,j in enumerate(ax.lines):
@@ -247,7 +247,7 @@ class Society_Graph:
             fig = plt.figure()
         if ax is None:
             ax = fig.add_subplot()
-        ax.set_ylim(0,1)
+        ax.set_ylim(-0.02,1.02)
         ax.plot(np.array(self.polarization_history), color = color)
         return ax, fig
 	
@@ -260,16 +260,16 @@ class Society_Graph:
             gs = gridspec.GridSpec(3, 1, figure=fig, hspace=0)
             axt = fig.add_subplot(gs[:-1, :])
             axb = fig.add_subplot(gs[-1, :], sharex=axt)
-        axb.set_ylim(0,1)
-        axt.set_ylim(0,1)
-        axt.tick_params(axis='y',colors = 'tab:blue')
-        axt.set_yticks([0.2,0.4,0.6,0.8,1])
-        axb.tick_params(axis='y', colors = '#770000')
+        axt.tick_params(axis='y',colors = '#1E88E5')
+        #axt.set_yticks([0.2,0.4,0.6,0.8,1])
+        axb.tick_params(axis='y', colors = '#004D40')
         self.plot_history(ax = axt, fig = fig)
         axt.set_ylabel("Belief")
         self.plot_polarization(ax = axb, fig = fig, color = "#770000")
         axb.set_ylabel("Polarization")
         axb.set_xlabel("Time")
+        axb.set_ylim(-0.1,1.1)
+        axt.set_ylim(-0.1,1.1)
         return axb, axt, fig
 
     def draw_graph(self) -> None:
