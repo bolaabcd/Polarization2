@@ -186,8 +186,8 @@ def many_sides(
         1, # end_value : np.float64,
         tolerance_agent_agent, # tolerance_value : np.float64,
         0, # influence_value : np.float64,
-        "#ff0000", # node_color : str = "tab:blue",
-        "#000000", # edge_color : str = "tab:gray",
+        "#D81B60",
+        "#D81B60",
         0, # group_num : int = 0,
         see_constant_agents = see_constant_agents, # see_constant_agents : bool = True,
         constant_agents_tol = constant_agents_tol # constant_agents_tol : bool = False
@@ -215,8 +215,8 @@ def many_sides(
                 min(val + side_diff, 1), # end_value : np.float64,
                 tolerance_agent_agent, # tolerance_value : np.float64,
                 influence_agent_agent, # influence_value : np.float64,
-                "#ff7700", # node_color : str = "tab:blue",
-                "#ff7700", # edge_color : str = "tab:gray",
+                "#1E88E5",
+                "#1E88E5",
                 cnt + 1, # group_num : int = 0,
                 see_constant_agents = see_constant_agents, # see_constant_agents : bool = True,
                 constant_agents_tol = constant_agents_tol # constant_agents_tol : bool = False
@@ -231,8 +231,8 @@ def many_sides(
         neutral_high, # end_value : np.float64,
         tolerance_agent_agent, # tolerance_value : np.float64,
         influence_agent_agent, # influence_value : np.float64,
-        "#00ff00", # node_color : str = "tab:blue",
-        "#00ff00", # edge_color : str = "tab:gray",
+        "#FFC107",
+        "#FFC107",
         len(num_agents_sides) + 1, # group_num : int = 0,
         see_constant_agents = see_constant_agents, # see_constant_agents : bool = True,
         constant_agents_tol = constant_agents_tol # constant_agents_tol : bool = False
@@ -248,7 +248,6 @@ def many_sides(
 
     sideagents_to_agents = all_edges(range(size1, size1+size2), range(size1+size2,size1+size2+size3))
     agents_to_sideagents = all_edges(range(size1+size2, size1+size2+size3), range(size1,size1+size2))
-    agents_to_agents = all_edges(range(size1+size2, size1+size2+size3), range(size1+size2, size1+size2+size3))
 
     result = sides
     for i in side_agents:
@@ -257,10 +256,9 @@ def many_sides(
 
     # print(np.array(result.belief_history))
     if influence_sides_agent != 0:
-        result.graph.add_edges_from(side_to_sideagents, inf = influence_sides_agent, tol = tolerance_sides_agent, upf = update_sides_agent, color = '#ff4444')
+        result.graph.add_edges_from(side_to_sideagents, inf = influence_sides_agent, tol = tolerance_sides_agent, upf = update_sides_agent, color = '#004D40')
     if influence_agent_agent != 0:
-        result.graph.add_edges_from(sideagents_to_agents, inf = influence_agent_agent, tol = tolerance_agent_agent, upf = update_agent_agent, color = '#ffaa00')
-        result.graph.add_edges_from(agents_to_sideagents, inf = influence_agent_agent, tol = tolerance_agent_agent, upf = update_agent_agent, color = '#aaff00')
-        result.graph.add_edges_from(agents_to_agents, inf = influence_agent_agent, tol = tolerance_agent_agent, upf = update_agent_agent, color = '#ccffcc')
+        result.graph.add_edges_from(sideagents_to_agents, inf = influence_agent_agent, tol = tolerance_agent_agent, upf = update_agent_agent, color = '#004D40')
+        result.graph.add_edges_from(agents_to_sideagents, inf = influence_agent_agent, tol = tolerance_agent_agent, upf = update_agent_agent, color = '#004D40')
 
     return result
