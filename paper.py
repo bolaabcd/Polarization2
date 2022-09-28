@@ -435,3 +435,276 @@ plt.close()
 scbuffer1000.plot_hist_pol()
 plt.savefig("generated/paper/hp_scbuffer1000.svg")
 plt.close()
+
+#12 Good Backfire (polarization with constant agents)
+k = 1
+nsides = 2
+nagsides = 3
+func = non_norm_quadratic_update
+good_bf1_const = many_sides(
+    ## number of sides, agents initially defending sides and neutral agents
+    nsides,#num_sides : int,
+    [nagsides for i in range(nsides)],#num_agents_sides : int,
+    7,#num_neutral_agents : int,
+    ## influences from the sides to agents, and from agent to agent
+    1,#influence_sides_agent : np.float64,
+    1,#influence_agent_agent : np.float64,
+    ## update functions
+    func,#update_sides_agent : np.float64,
+    func,#update_agent_agent : np.float64,
+    ## tolerances
+    k,#tolerance_sides_agent : np.float64,
+    0,#tolerance_agent_agent : np.float64,
+    ## value of agent defend side is side_value +- side_diff
+    0.1,#side_diff : np.float64,
+    ## interval of belief values of neutral agents
+    0,#neutral_low : np.float64 = 0,
+    1,#neutral_high : np.float64 = 1,
+    ## post-simulation settings
+    True,#see_constant_agents: bool = True,
+    True,#constant_agents_tol: bool = False,
+    #pol_measure : FunctionType = pol_ER_discretized
+)
+
+neutralrange = list(range(nsides+nsides*nagsides,good_bf1_const.num_agents))
+sidagentsrange = list(range(nsides,nsides+nsides*nagsides))
+sidesrange = list(range(0,nsides))
+
+draw_networkx(
+    good_bf1_const.graph,
+    node_color = [good_bf1_const.graph.nodes[n][COLOR] for n in good_bf1_const.graph.nodes],
+    edge_color = [good_bf1_const.graph[e[0]][e[1]][COLOR] for e in good_bf1_const.graph.edges],
+    with_labels = False,
+    pos = nx.shell_layout(good_bf1_const.graph,[neutralrange,sidagentsrange,sidesrange]),
+    # node_size = 30, # 300
+    # arrowsize = 3, # 10
+    linewidths = 0.1 # 1.0
+)
+
+plt.savefig("generated/paper/good_bf.svg")
+plt.close()
+good_bf1_const.draw_graph()
+plt.savefig("generated/paper/good_bf_bad_plot.svg")
+plt.close()
+
+good_bf1_const.quick_update(30)
+plt.close()
+good_bf1_const.plot_history()
+plt.savefig("generated/paper/hist_good_bf1_const.svg")
+plt.close()
+good_bf1_const.plot_polarization()
+plt.savefig("generated/paper/pol_good_bf1_const.svg")
+plt.close()
+good_bf1_const.plot_hist_pol()
+plt.savefig("generated/paper/hp_good_bf1_const.svg")
+plt.close()
+
+
+#13 Good Backfire (polarization without constant agents)
+k = 1
+nsides = 2
+nagsides = 3
+func = non_norm_quadratic_update
+good_bf1 = many_sides(
+    ## number of sides, agents initially defending sides and neutral agents
+    nsides,#num_sides : int,
+    [nagsides for i in range(nsides)],#num_agents_sides : int,
+    7,#num_neutral_agents : int,
+    ## influences from the sides to agents, and from agent to agent
+    1,#influence_sides_agent : np.float64,
+    1,#influence_agent_agent : np.float64,
+    ## update functions
+    func,#update_sides_agent : np.float64,
+    func,#update_agent_agent : np.float64,
+    ## tolerances
+    k,#tolerance_sides_agent : np.float64,
+    0,#tolerance_agent_agent : np.float64,
+    ## value of agent defend side is side_value +- side_diff
+    0.1,#side_diff : np.float64,
+    ## interval of belief values of neutral agents
+    0,#neutral_low : np.float64 = 0,
+    1,#neutral_high : np.float64 = 1,
+    ## post-simulation settings
+    True,#see_constant_agents: bool = True,
+    False,#constant_agents_tol: bool = False,
+    #pol_measure : FunctionType = pol_ER_discretized
+)
+good_bf1.quick_update(30)
+plt.close()
+good_bf1.plot_history()
+plt.savefig("generated/paper/hist_good_bf1.svg")
+plt.close()
+good_bf1.plot_polarization()
+plt.savefig("generated/paper/pol_good_bf1.svg")
+plt.close()
+good_bf1.plot_hist_pol()
+plt.savefig("generated/paper/hp_good_bf1.svg")
+plt.close()
+
+#14 Good Backfire (polarization with constant agents)
+k = -1
+nsides = 2
+nagsides = 3
+func = non_norm_quadratic_update
+good_bfminus1_const = many_sides(
+    ## number of sides, agents initially defending sides and neutral agents
+    nsides,#num_sides : int,
+    [nagsides for i in range(nsides)],#num_agents_sides : int,
+    7,#num_neutral_agents : int,
+    ## influences from the sides to agents, and from agent to agent
+    1,#influence_sides_agent : np.float64,
+    1,#influence_agent_agent : np.float64,
+    ## update functions
+    func,#update_sides_agent : np.float64,
+    func,#update_agent_agent : np.float64,
+    ## tolerances
+    k,#tolerance_sides_agent : np.float64,
+    0,#tolerance_agent_agent : np.float64,
+    ## value of agent defend side is side_value +- side_diff
+    0.1,#side_diff : np.float64,
+    ## interval of belief values of neutral agents
+    0,#neutral_low : np.float64 = 0,
+    1,#neutral_high : np.float64 = 1,
+    ## post-simulation settings
+    True,#see_constant_agents: bool = True,
+    True,#constant_agents_tol: bool = False,
+    #pol_measure : FunctionType = pol_ER_discretized
+)
+good_bfminus1_const.quick_update(30)
+plt.close()
+good_bfminus1_const.plot_history()
+plt.savefig("generated/paper/hist_good_bfminus1_const.svg")
+plt.close()
+good_bfminus1_const.plot_polarization()
+plt.savefig("generated/paper/pol_good_bfminus1_const.svg")
+plt.close()
+good_bfminus1_const.plot_hist_pol()
+plt.savefig("generated/paper/hp_good_bfminus1_const.svg")
+plt.close()
+
+
+#15 Good Backfire (polarization without constant agents)
+k = -1
+nsides = 2
+nagsides = 3
+func = non_norm_quadratic_update
+good_bfminus1 = many_sides(
+    ## number of sides, agents initially defending sides and neutral agents
+    nsides,#num_sides : int,
+    [nagsides for i in range(nsides)],#num_agents_sides : int,
+    7,#num_neutral_agents : int,
+    ## influences from the sides to agents, and from agent to agent
+    1,#influence_sides_agent : np.float64,
+    1,#influence_agent_agent : np.float64,
+    ## update functions
+    func,#update_sides_agent : np.float64,
+    func,#update_agent_agent : np.float64,
+    ## tolerances
+    k,#tolerance_sides_agent : np.float64,
+    0,#tolerance_agent_agent : np.float64,
+    ## value of agent defend side is side_value +- side_diff
+    0.1,#side_diff : np.float64,
+    ## interval of belief values of neutral agents
+    0,#neutral_low : np.float64 = 0,
+    1,#neutral_high : np.float64 = 1,
+    ## post-simulation settings
+    True,#see_constant_agents: bool = True,
+    False,#constant_agents_tol: bool = False,
+    #pol_measure : FunctionType = pol_ER_discretized
+)
+
+good_bfminus1.quick_update(30)
+plt.close()
+good_bfminus1.plot_history()
+plt.savefig("generated/paper/hist_good_bfminus1.svg")
+plt.close()
+good_bfminus1.plot_polarization()
+plt.savefig("generated/paper/pol_good_bfminus1.svg")
+plt.close()
+good_bfminus1.plot_hist_pol()
+plt.savefig("generated/paper/hp_good_bfminus1.svg")
+plt.close()
+
+#16 Good Backfire (polarization with constant agents)
+k = -0.5
+nsides = 2
+nagsides = 3
+func = non_norm_quadratic_update
+good_bfbest_const = many_sides(
+    ## number of sides, agents initially defending sides and neutral agents
+    nsides,#num_sides : int,
+    [nagsides for i in range(nsides)],#num_agents_sides : int,
+    7,#num_neutral_agents : int,
+    ## influences from the sides to agents, and from agent to agent
+    1,#influence_sides_agent : np.float64,
+    1,#influence_agent_agent : np.float64,
+    ## update functions
+    func,#update_sides_agent : np.float64,
+    func,#update_agent_agent : np.float64,
+    ## tolerances
+    k,#tolerance_sides_agent : np.float64,
+    0,#tolerance_agent_agent : np.float64,
+    ## value of agent defend side is side_value +- side_diff
+    0.1,#side_diff : np.float64,
+    ## interval of belief values of neutral agents
+    0,#neutral_low : np.float64 = 0,
+    1,#neutral_high : np.float64 = 1,
+    ## post-simulation settings
+    True,#see_constant_agents: bool = True,
+    True,#constant_agents_tol: bool = False,
+    #pol_measure : FunctionType = pol_ER_discretized
+)
+good_bfbest_const.quick_update(30)
+plt.close()
+good_bfbest_const.plot_history()
+plt.savefig("generated/paper/hist_good_bfbest_const.svg")
+plt.close()
+good_bfbest_const.plot_polarization()
+plt.savefig("generated/paper/pol_good_bfbest_const.svg")
+plt.close()
+good_bfbest_const.plot_hist_pol()
+plt.savefig("generated/paper/hp_good_bfbest_const.svg")
+plt.close()
+
+
+#17 Good Backfire (polarization without constant agents)
+k = -0.5
+nsides = 2
+nagsides = 3
+func = non_norm_quadratic_update
+good_bfbest = many_sides(
+    ## number of sides, agents initially defending sides and neutral agents
+    nsides,#num_sides : int,
+    [nagsides for i in range(nsides)],#num_agents_sides : int,
+    7,#num_neutral_agents : int,
+    ## influences from the sides to agents, and from agent to agent
+    1,#influence_sides_agent : np.float64,
+    1,#influence_agent_agent : np.float64,
+    ## update functions
+    func,#update_sides_agent : np.float64,
+    func,#update_agent_agent : np.float64,
+    ## tolerances
+    k,#tolerance_sides_agent : np.float64,
+    0,#tolerance_agent_agent : np.float64,
+    ## value of agent defend side is side_value +- side_diff
+    0.1,#side_diff : np.float64,
+    ## interval of belief values of neutral agents
+    0,#neutral_low : np.float64 = 0,
+    1,#neutral_high : np.float64 = 1,
+    ## post-simulation settings
+    True,#see_constant_agents: bool = True,
+    False,#constant_agents_tol: bool = False,
+    #pol_measure : FunctionType = pol_ER_discretized
+)
+good_bfbest.quick_update(30)
+plt.close()
+good_bfbest.plot_history()
+plt.savefig("generated/paper/hist_good_bfbest.svg")
+plt.close()
+good_bfbest.plot_polarization()
+plt.savefig("generated/paper/pol_good_bfbest.svg")
+plt.close()
+good_bfbest.plot_hist_pol()
+plt.savefig("generated/paper/hp_good_bfbest.svg")
+plt.close()
+
