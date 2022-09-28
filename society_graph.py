@@ -234,8 +234,10 @@ class Society_Graph:
             ax = fig.add_subplot()
         ax.set_ylim(0,1)
         ax.plot(np.array(self.belief_history))
+        valid_ags_list = np.array(range(self.num_agents))[self.get_valid_agents()]
         for i,j in enumerate(ax.lines):
-            j.set_color(self.graph.nodes[i][COLOR])
+            j.set_color(self.graph.nodes[valid_ags_list[i]][COLOR])
+
         return ax, fig
 
     def plot_polarization(self, ax : plt.Axes = None, fig : plt.Figure = None, color : str = 'tab:blue') -> (plt.Axes, plt.Figure):
