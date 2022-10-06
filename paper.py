@@ -19,6 +19,20 @@ if not os.path.exists("generated/"):
 if not os.path.exists("generated/paper/"):
     os.mkdir("generated/paper/")
 
+def plot_function(f,k):
+	plt.close()
+	x = np.linspace(-1,1,1000)
+	y = f(x,k)
+	y = np.clip(y,-1,1)
+	fig, ax = plt.subplots()
+	line, = ax.plot([])
+	ax.set_xlim(-1, 1)
+	ax.set_ylim(-1, 1)
+	ax.grid(True, which='both')
+	ax.axhline(y=0, color='k')
+	ax.axvline(x=0, color='k')
+	ax.plot(x,y, color = '#880000')
+
 # 1) Simple classical model example: influence for each edge
 func = line_update 
 k = 1
@@ -44,14 +58,7 @@ plt.savefig("generated/paper/hp_classical.svg")
 plt.close()
 classical.draw_graph()
 plt.savefig("generated/paper/clique.svg")
-plt.close()
-x = np.linspace(-1,1,1000)
-y = func(x,k)
-y = np.clip(y,-1,1)
-plt.plot(x,x, color = 'k')
-plt.plot(x,np.zeros(x.shape), color = 'k')
-plt.plot(np.zeros(y.shape),x, color = 'k')
-plt.plot(x,y, color = '#880000')
+plot_function(func,k)
 plt.savefig("generated/paper/func_classical.svg")
 plt.close()
 
@@ -74,14 +81,7 @@ plt.savefig("generated/paper/pol_cbias.svg")
 plt.close()
 cbias.plot_hist_pol()
 plt.savefig("generated/paper/hp_cbias.svg")
-plt.close()
-x = np.linspace(-1,1,1000)
-y = func(x,k)
-y = np.clip(y,-1,1)
-plt.plot(x,x, color = 'k')
-plt.plot(x,np.zeros(x.shape), color = 'k')
-plt.plot(np.zeros(y.shape),x, color = 'k')
-plt.plot(x,y, color = '#880000')
+plot_function(func,k)
 plt.savefig("generated/paper/func_cbias.svg")
 plt.close()
 
@@ -105,18 +105,11 @@ plt.savefig("generated/paper/pol_reac.svg")
 plt.close()
 reac.plot_hist_pol()
 plt.savefig("generated/paper/hp_reac.svg")
-plt.close()
-x = np.linspace(-1,1,1000)
-y = func(x,k)
-y = np.clip(y,-1,1)
-plt.plot(x,x, color = 'k')
-plt.plot(x,np.zeros(x.shape), color = 'k')
-plt.plot(np.zeros(y.shape),x, color = 'k')
-plt.plot(x,y, color = '#880000')
+plot_function(func,k)
 plt.savefig("generated/paper/func_reac.svg")
 plt.close()
 
-# 4) Super-susceptibility example
+# 4) Super-susceptibility example 1
 func = non_norm_quadratic_update
 k = 1
 supsuc = simple_clique_uniform(15,func,0,1,k,1)
@@ -135,14 +128,7 @@ plt.savefig("generated/paper/pol_supsuc.svg")
 plt.close()
 supsuc.plot_hist_pol()
 plt.savefig("generated/paper/hp_supsuc.svg")
-plt.close()
-x = np.linspace(-1,1,1000)
-y = func(x,k)
-y = np.clip(y,-1,1)
-plt.plot(x,x, color = 'k')
-plt.plot(x,np.zeros(x.shape), color = 'k')
-plt.plot(np.zeros(y.shape),x, color = 'k')
-plt.plot(x,y, color = '#880000')
+plot_function(func,k)
 plt.savefig("generated/paper/func_supsuc.svg")
 plt.close()
 
@@ -365,6 +351,7 @@ scbuffer30 = scientists_buffer (
     constant_agents_tol = True,
     random_others = True,#random_others = False
 )
+plt.close()
 draw_networkx(
     scbuffer30.graph,
     node_color = [scbuffer30.graph.nodes[n][COLOR] for n in scbuffer30.graph.nodes],
@@ -375,6 +362,7 @@ draw_networkx(
     # arrowsize = 3, # 10
     linewidths = 0.1 # 1.0
 )
+plt.box(False)
 #scbuffer30.draw_graph()
 plt.savefig("generated/paper/sc_buffer.svg")
 plt.close()
@@ -837,22 +825,16 @@ draw_networkx(
     linewidths = 0.1 # 1.0
 )
 
-plt.savefig("generated/paper/good_bf.svg")
-plt.close()
-good_bf1_const.draw_graph()
-plt.savefig("generated/paper/good_bf_bad_plot.svg")
-plt.close()
-
 good_bf1_const.quick_update(30)
 plt.close()
 good_bf1_const.plot_history()
-plt.savefig("generated/paper/hist_good_bf1_const.svg")
+plt.savefig("generated/paper/hist_good_bf1_const_alt.svg")
 plt.close()
 good_bf1_const.plot_polarization()
-plt.savefig("generated/paper/pol_good_bf1_const.svg")
+plt.savefig("generated/paper/pol_good_bf1_const_alt.svg")
 plt.close()
 good_bf1_const.plot_hist_pol()
-plt.savefig("generated/paper/hp_good_bf1_const.svg")
+plt.savefig("generated/paper/hp_good_bf1_const_alt.svg")
 plt.close()
 
 
@@ -888,13 +870,13 @@ good_bf1 = many_sides(
 good_bf1.quick_update(30)
 plt.close()
 good_bf1.plot_history()
-plt.savefig("generated/paper/hist_good_bf1.svg")
+plt.savefig("generated/paper/hist_good_bf1_alt.svg")
 plt.close()
 good_bf1.plot_polarization()
-plt.savefig("generated/paper/pol_good_bf1.svg")
+plt.savefig("generated/paper/pol_good_bf1_alt.svg")
 plt.close()
 good_bf1.plot_hist_pol()
-plt.savefig("generated/paper/hp_good_bf1.svg")
+plt.savefig("generated/paper/hp_good_bf1_alt.svg")
 plt.close()
 
 #14 Good Backfire (polarization with constant agents)
@@ -929,13 +911,13 @@ good_bfminus1_const = many_sides(
 good_bfminus1_const.quick_update(30)
 plt.close()
 good_bfminus1_const.plot_history()
-plt.savefig("generated/paper/hist_good_bfminus1_const.svg")
+plt.savefig("generated/paper/hist_good_bfminus1_const_alt.svg")
 plt.close()
 good_bfminus1_const.plot_polarization()
-plt.savefig("generated/paper/pol_good_bfminus1_const.svg")
+plt.savefig("generated/paper/pol_good_bfminus1_const_alt.svg")
 plt.close()
 good_bfminus1_const.plot_hist_pol()
-plt.savefig("generated/paper/hp_good_bfminus1_const.svg")
+plt.savefig("generated/paper/hp_good_bfminus1_const_alt.svg")
 plt.close()
 
 
@@ -972,13 +954,13 @@ good_bfminus1 = many_sides(
 good_bfminus1.quick_update(30)
 plt.close()
 good_bfminus1.plot_history()
-plt.savefig("generated/paper/hist_good_bfminus1.svg")
+plt.savefig("generated/paper/hist_good_bfminus1_alt.svg")
 plt.close()
 good_bfminus1.plot_polarization()
-plt.savefig("generated/paper/pol_good_bfminus1.svg")
+plt.savefig("generated/paper/pol_good_bfminus1_alt.svg")
 plt.close()
 good_bfminus1.plot_hist_pol()
-plt.savefig("generated/paper/hp_good_bfminus1.svg")
+plt.savefig("generated/paper/hp_good_bfminus1_alt.svg")
 plt.close()
 
 #16 Good Backfire (polarization with constant agents)
@@ -1013,15 +995,14 @@ good_bfbest_const = many_sides(
 good_bfbest_const.quick_update(30)
 plt.close()
 good_bfbest_const.plot_history()
-plt.savefig("generated/paper/hist_good_bfbest_const.svg")
+plt.savefig("generated/paper/hist_good_bfbest_const_alt.svg")
 plt.close()
 good_bfbest_const.plot_polarization()
-plt.savefig("generated/paper/pol_good_bfbest_const.svg")
+plt.savefig("generated/paper/pol_good_bfbest_const_alt.svg")
 plt.close()
 good_bfbest_const.plot_hist_pol()
-plt.savefig("generated/paper/hp_good_bfbest_const.svg")
+plt.savefig("generated/paper/hp_good_bfbest_const_alt.svg")
 plt.close()
-
 
 #17 Good Backfire (polarization without constant agents)
 k = -0.26
@@ -1055,13 +1036,13 @@ good_bfbest = many_sides(
 good_bfbest.quick_update(30)
 plt.close()
 good_bfbest.plot_history()
-plt.savefig("generated/paper/hist_good_bfbest.svg")
+plt.savefig("generated/paper/hist_good_bfbest_alt.svg")
 plt.close()
 good_bfbest.plot_polarization()
-plt.savefig("generated/paper/pol_good_bfbest.svg")
+plt.savefig("generated/paper/pol_good_bfbest_alt.svg")
 plt.close()
 good_bfbest.plot_hist_pol()
-plt.savefig("generated/paper/hp_good_bfbest.svg")
+plt.savefig("generated/paper/hp_good_bfbest_alt.svg")
 plt.close()
 
 #18 Good Backfire (polarization with constant agents)
@@ -1096,13 +1077,13 @@ good_bf0_const = many_sides(
 good_bf0_const.quick_update(30)
 plt.close()
 good_bf0_const.plot_history()
-plt.savefig("generated/paper/hist_good_bf0_const.svg")
+plt.savefig("generated/paper/hist_good_bf0_const_alt.svg")
 plt.close()
 good_bf0_const.plot_polarization()
-plt.savefig("generated/paper/pol_good_bf0_const.svg")
+plt.savefig("generated/paper/pol_good_bf0_const_alt.svg")
 plt.close()
 good_bf0_const.plot_hist_pol()
-plt.savefig("generated/paper/hp_good_bf0_const.svg")
+plt.savefig("generated/paper/hp_good_bf0_const_alt.svg")
 plt.close()
 
 
@@ -1138,12 +1119,243 @@ good_bf0 = many_sides(
 good_bf0.quick_update(30)
 plt.close()
 good_bf0.plot_history()
-plt.savefig("generated/paper/hist_good_bf0.svg")
+plt.savefig("generated/paper/hist_good_bf0_alt.svg")
 plt.close()
 good_bf0.plot_polarization()
-plt.savefig("generated/paper/pol_good_bf0.svg")
+plt.savefig("generated/paper/pol_good_bf0_alt.svg")
 plt.close()
 good_bf0.plot_hist_pol()
-plt.savefig("generated/paper/hp_good_bf0.svg")
+plt.savefig("generated/paper/hp_good_bf0_alt.svg")
+plt.close()
+
+#20 Plotting one-to-one functions
+func = line_update
+k = 0.2
+plot_function(func,k)
+plt.savefig("generated/paper/func_line_0_2.svg")
+plt.close()
+k = -1
+plot_function(func,k)
+plt.savefig("generated/paper/func_line_minus1.svg")
+plt.close()
+func = non_norm_quadratic_update
+k = -0.7
+plot_function(func,k)
+plt.savefig("generated/paper/func_quad_minus0_7.svg")
+plt.close()
+k = -0.2
+plot_function(func,k)
+plt.savefig("generated/paper/func_quad_minus0_2.svg")
+plt.close()
+k = 0.3
+plot_function(func,k)
+plt.savefig("generated/paper/func_quad_0_3.svg")
+plt.close()
+k = 0.6
+plot_function(func,k)
+plt.savefig("generated/paper/func_quad_0_6.svg")
+plt.close()
+
+
+#21 Super-Susceptibility example 2, 30 steps
+func = non_norm_quadratic_update
+k = 1
+supsuc = simple_clique_uniform(15,func,0,1,k,1)
+supsuc.quick_update(30)
+plt.close()
+supsuc.plot_history()
+plt.savefig("generated/paper/hist_supsuc2.svg")
+plt.close()
+supsuc.plot_polarization()
+plt.savefig("generated/paper/pol_supsuc2.svg")
+plt.close()
+supsuc.plot_hist_pol()
+plt.savefig("generated/paper/hp_supsuc2.svg")
+plot_function(func,k)
+plt.savefig("generated/paper/func_supsuc2.svg")
+plt.close()
+
+#22 Super-Susceptibility example 2, 100 steps
+func = non_norm_quadratic_update
+k = 1
+supsuc = simple_clique_uniform(15,func,0,1,k,1)
+supsuc.quick_update(100)
+plt.close()
+supsuc.plot_history()
+plt.savefig("generated/paper/hist_supsuc2_100_steps.svg")
+plt.close()
+supsuc.plot_polarization()
+plt.savefig("generated/paper/pol_supsuc2_100_steps.svg")
+plt.close()
+supsuc.plot_hist_pol()
+plt.savefig("generated/paper/hp_supsuc2_100_steps.svg")
+plot_function(func,k)
+plt.savefig("generated/paper/func_supsuc2.svg")
+plt.close()
+
+
+
+#23 Regions (daltonism-friendly colors: "#D81B60" "#1E88E5" "#FFC107" "#004D40")
+plt.close()
+x = np.linspace(-1,1,1000)
+plt.fill_between(x,-x/abs(x),color="#D81B60") # reactance
+plt.text(0.5,-0.5,"(3)")
+plt.fill_between(x,x,color="#FFC107") # resistance
+plt.text(0.7,0.3,"(2)")
+plt.fill_between(x,x/abs(x),x,color="#1E88E5") # susceptibility
+plt.text(0.3,0.7,"(1)")
+plt.plot(x,x,color="#004D40") # neutral
+plt.text(-0.5,-0.03,"(4)")
+plt.plot(x,np.zeros(1000),color="#777777")# balanced
+plt.text(-0.7,-0.67,"(5)")
+
+plt.savefig("generated/paper/regions.svg")
+
+
+#24 extra functions for puppet-effect
+from math import atan
+k = 1
+def supsuc1(x,k):
+	y = 0
+	if len(np.array(x).shape) == 0:
+		y = atan(x)
+	elif len(x.shape) == 1:
+		y = np.zeros(x.shape)
+		for i in range(x.shape[0]):
+			y[i] = atan(x[i])
+	else:
+		y = np.zeros(x.shape)
+		assert(len(x.shape) == 2)
+		for i in range(x.shape[0]):
+			for j in range(x.shape[1]):
+				y[i][j] = atan(x[i][j])
+	return y/atan(1)
+def supsuc2(x,k):
+	return np.nan_to_num(x/np.sqrt(abs(x)))
+func = supsuc1
+plot_function(func,k)
+plt.savefig("generated/paper/func_extra_supsuc1.svg")
+plt.close()
+
+supsuc = simple_clique_uniform(15,func,0,1,k,1)
+supsuc.quick_update(30)
+plt.close()
+supsuc.plot_history()
+plt.savefig("generated/paper/hist_extra_supsuc1.svg")
+plt.close()
+
+
+func = supsuc2
+plot_function(func,k)
+plt.savefig("generated/paper/func_extra_supsuc2.svg")
+plt.close()
+
+supsuc = simple_clique_uniform(15,func,0,1,k,1)
+supsuc.quick_update(30)
+plt.close()
+supsuc.plot_history()
+plt.savefig("generated/paper/hist_extra_supsuc2.svg")
+plt.close()
+
+
+
+#25 extra functions for reactance
+from math import sin
+k = 1
+def reac1(x,k):
+	y = 0
+	if len(np.array(x).shape) == 0:
+		y = -sin(x)
+	elif len(x.shape) == 1:
+		y = np.zeros(x.shape)
+		for i in range(x.shape[0]):
+			y[i] = -sin(x[i])
+	else:
+		y = np.zeros(x.shape)
+		assert(len(x.shape) == 2)
+		for i in range(x.shape[0]):
+			for j in range(x.shape[1]):
+				y[i][j] = -sin(x[i][j])
+	return y
+def reac2(x,k):
+	return -x**3
+func = reac1
+plot_function(func,k)
+plt.savefig("generated/paper/func_extra_reac1.svg")
+plt.close()
+
+reac = simple_clique_uniform(15,func,0,1,k,1)
+reac.quick_update(30)
+plt.close()
+reac.plot_history()
+plt.savefig("generated/paper/hist_extra_reac1.svg")
+plt.close()
+
+
+func = reac2
+plot_function(func,k)
+plt.savefig("generated/paper/func_extra_reac2.svg")
+plt.close()
+
+reac = simple_clique_uniform(15,func,0,1,k,1)
+reac.quick_update(30)
+plt.close()
+reac.plot_history()
+plt.savefig("generated/paper/hist_extra_reac2.svg")
+plt.close()
+
+#25 extra functions for resilliency
+from math import sin
+k = 1
+def cbias1(x,k):
+	y = 0
+	if len(np.array(x).shape) == 0:
+		y = sin(x)
+	elif len(x.shape) == 1:
+		y = np.zeros(x.shape)
+		for i in range(x.shape[0]):
+			y[i] = sin(x[i])
+	else:
+		y = np.zeros(x.shape)
+		assert(len(x.shape) == 2)
+		for i in range(x.shape[0]):
+			for j in range(x.shape[1]):
+				y[i][j] = sin(x[i][j])
+	return y
+def cbias2(x,k):
+	return x**3
+func = cbias1
+plot_function(func,k)
+plt.savefig("generated/paper/func_extra_cbias1.svg")
+plt.close()
+
+cbias = simple_clique_uniform(15,func,0,1,k,1)
+cbias.quick_update(30)
+plt.close()
+cbias.plot_history()
+plt.savefig("generated/paper/hist_extra_cbias1.svg")
+plt.close()
+
+
+func = cbias2
+plot_function(func,k)
+plt.savefig("generated/paper/func_extra_cbias2.svg")
+plt.close()
+
+cbias = simple_clique_uniform(15,func,0,1,k,1)
+cbias.quick_update(30)
+plt.close()
+cbias.plot_history()
+plt.savefig("generated/paper/hist_extra_cbias2.svg")
+plt.close()
+
+# Last and simplest plot
+k = 0
+func = line_update
+neutral = simple_clique_uniform(15,func,0,1,k,1)
+neutral.quick_update(30)
+plt.close()
+neutral.plot_history()
+plt.savefig("generated/paper/hist_neutral.svg")
 plt.close()
 
