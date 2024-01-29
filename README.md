@@ -10,7 +10,7 @@ In the model we implement, society is represented as a directed weighted graph: 
 All update-functions we test have the same general format:
 
 
-$$B_i^{t+1} = B_i^t + \Sigma_{i\in A_i} (\frac{I_{j,i}}{\Sigma_{k\in A_i} I_{k,i}} f_{j,i}(B_j^t-B_i^))$$
+$$B_i^{t+1} = B_i^t + \Sigma_{i\in A_i} (\frac{I_{j,i}}{\Sigma_{k\in A_i} I_{k,i}} f_{j,i}(B_j^t-B_i^t))$$
 
 Where:
 
