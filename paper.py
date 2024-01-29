@@ -27,7 +27,7 @@ def plot_function(f,k):
 	fig, ax = plt.subplots()
 	line, = ax.plot([])
 	ax.set_xlim(-1, 1)
-	ax.set_ylim(-1, 1)
+	ax.set_ylim(-1.02, 1.02)
 	ax.grid(True, which='both')
 	ax.axhline(y=0, color='k')
 	ax.axvline(x=0, color='k')

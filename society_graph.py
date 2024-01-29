@@ -136,9 +136,9 @@ class Society_Graph:
     def apply_f(self, nbr : int, n : int, graph = None) -> np.float64:
         if graph is None:
             graph = self.graph
-        f = graph.nodes[n][UPDATE_F]
+        f = graph[nbr][n][UPDATE_F]
         diff = graph.nodes[nbr][BELIEF_VALUE] - graph.nodes[n][BELIEF_VALUE]
-        tol = graph[n][nbr][TOLERANCE_VALUE]
+        tol = graph[nbr][n][TOLERANCE_VALUE]
         return f(diff, tol)
     def set_between_0_1(self, n : int) -> None:
         self.graph.nodes[n][BELIEF_VALUE] = max(0,self.graph.nodes[n][BELIEF_VALUE])
@@ -152,9 +152,12 @@ class Society_Graph:
             if graph.in_degree(n) == 0:
                 continue
             sum = 0
+            sum_infs = 0
             for nbr in graph.predecessors(n):
                 sum += self.apply_f(nbr,n,graph)*graph[nbr][n][INFLUENCE_VALUE]
-            self.graph.nodes[n][BELIEF_VALUE] += sum/graph.in_degree(n)
+                sum_infs += graph[nbr][n][INFLUENCE_VALUE]
+            #self.graph.nodes[n][BELIEF_VALUE] += sum/graph.in_degree(n)
+            self.graph.nodes[n][BELIEF_VALUE] += sum/sum_infs
             self.set_between_0_1(n)
         self.register_state()
 
@@ -180,12 +183,13 @@ class Society_Graph:
         blf_mat = np.array(blf_mat)
         tol_mat = nx.convert_matrix.to_numpy_array(self.graph, weight = TOLERANCE_VALUE) # sets to 1 if edge is not specified
         inf_mat = nx.convert_matrix.to_numpy_array(self.graph, weight = INFLUENCE_VALUE) # sets to 1 if edge is not specified
-        neighbours = [np.count_nonzero(inf_mat[:, i]) for i, _ in enumerate(blf_mat)]
+        # neighbours = [np.count_nonzero(inf_mat[:, i]) for i, _ in enumerate(blf_mat)]
+        sum_infs = [inf_mat[:, i].sum() for i, _ in enumerate(blf_mat)]
         for i in range(number_of_updates):
             diff = np.ones((len(blf_mat), 1)) @  np.asarray(blf_mat)[np.newaxis]
             diff = np.transpose(diff) - diff
             preAns = f0(diff,tol_mat)*inf_mat
-            preAns = np.add.reduce(preAns) / neighbours # preAns is now how much we will add to each belief value. (the summation part)
+            preAns = np.add.reduce(preAns) / sum_infs # preAns is now how much we will add to each belief value. (the summation part)
             preAns = np.nan_to_num(preAns) # If there are no neighbours, we don't want to change anything, so set NaNs to zero.
             preAns += blf_mat # preAns now contains K_i^{t+1}, for every agent i
             blf_mat = np.clip(preAns,0,1) # preAns now contains B_i^{t+1}, for every agent i

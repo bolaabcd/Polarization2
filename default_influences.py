@@ -133,6 +133,19 @@ def build_inf_graph_random(num_agents : int, diagonal_value : np.float64 = 0, mi
         np.fill_diagonal(inf_graph, diagonal_value)
     return inf_graph
 
+def build_inf_graph_vaccine():
+    inf_graph = np.zeros((6,6))
+    inf_graph[0][1] = 0.6
+    inf_graph[1][0] = 0.6
+    inf_graph[1][3] = 0.4
+    inf_graph[2][3] = 0.2
+    inf_graph[3][2] = 0.2
+    inf_graph[3][5] = 0.4
+    inf_graph[2][4] = 0.6
+    inf_graph[4][5] = 0.6
+    inf_graph[5][0] = 1.0
+    return inf_graph + np.identity(6)
+
 class Default_Influence(Enum):
     CLIQUE = 0
     GROUP_2_DISCONECTED = 1

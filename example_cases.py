@@ -8,6 +8,7 @@ from types import FunctionType
 from polarization_measure import pol_ER_discretized
 from society_graph import Society_Graph
 import default_beliefs,default_fs,default_influences,default_tolerances,belief_update_fs
+from belief_update_fs import line_update
 
 # Connects each in a to every agents in b
 def all_edges(a : list, b : list):
@@ -16,6 +17,35 @@ def all_edges(a : list, b : list):
         for j in b:
             ans.append((i,j))
     return ans
+
+# Vaccine example
+def vaccine(
+    tolerances, group_num = 0, 
+    beliefs = [1.0,0.9,0.8,0.0,0.1,0.2], 
+    functions = default_fs.same(6,line_update), 
+    influences = default_influences.build_inf_graph_vaccine(),
+    pol_measure : FunctionType = pol_ER_discretized
+) -> Society_Graph:
+    assert(len(beliefs) == 6)
+    assert(len(beliefs) == 6)
+    assert(functions.shape == (6,6))
+    assert(influences.shape == (6,6))
+    num_agents = 6
+    red1, red2, red3 = "#a30000", "#c44601", "#f57600"
+    blue1, blue2, blue3 = "#054fb9", "#0073e6", "#8babf1"
+    return Society_Graph(
+        6,
+        np.array(beliefs),
+        influences,
+        functions,
+        tolerances,
+        node_colors_vector = [blue1,blue2,blue3,red1,red2,red3],
+        edge_colors_matrix = [["tab:black" for i in range(num_agents)] for j in range(num_agents)],
+        node_groups_vector = [group_num for i in range(num_agents)],
+        see_constant_agents = 1,
+        constant_agents_tol = 1,
+        pol_measure = pol_measure
+    )
 
 # All agents initially agree completely
 def simple_clique_consensus(

@@ -61,3 +61,19 @@ def bad_exponential(x: float, k:float): # also works with numpy array.
         sigx[sigx <  0] = -1
     y = np.e**(-np.abs(x)**(-1.0))*sigx
     return y
+
+def sig(x: float, k:float): # also works with numpy array.
+    sigx = None
+    if type(x) is float: 
+        sigx = -1
+        if x > 0:
+            sigx = 1
+        elif x == 0:
+            sigx = 0
+    else:
+        sigx = np.copy(x)
+        sigx[sigx > 0] = 1
+        sigx[sigx <  0] = -1
+        sigx[sigx == 0] = 0
+    y = sigx*k
+    return y
