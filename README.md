@@ -1,6 +1,6 @@
 # Evolution of belief simulator
 
-This repository implements update functions for the multi-agent model introduced [here](https://link.springer.com/chapter/10.1007/978-3-030-78089-0_2).
+This repository implements update functions for the (extension of) multi-agent model introduced [here](https://link.springer.com/chapter/10.1007/978-3-030-78089-0_2).
 
 The main focus of this repository is to test the update functions and their effects on the evolution of agents beliefs.
 
@@ -10,19 +10,16 @@ In the model we implement, society is represented as a directed weighted graph: 
 All update-functions we test have the same general format:
 
 
-$$B_i^{t+1} = B_i^t + \Sigma_{i\in A_i} (\frac{I_{j,i}}{|A_i|} f(x_{j,i},k_i))$$
+$$B_i^{t+1} = B_i^t + \Sigma_{i\in A_i} (\frac{I_{j,i}}{\Sigma_{k\in A_i} I_{k,i}} f_{j,i}(B_j^t-B_i^))$$
 
 Where:
 
 - $B_i^t$ is the beleif value of agent $i$ at time step $t$.
 - $I_{j,i}$ is how much agent $i$ influences agent $j$ (a value between 0 and 1).
 - $A_i$ is the set of all agents that exerce some influence on agent $i$ (all $j$ such that $I_{j,i} > 0$).
-- $x_{j,i}$ is how much agent $j$ influences agent $i$.
-- $k_i$ is the **rationality-value** or **tolerance-value**, how much difference of opinion an agent tolerates. If we consider interactions as exchange of evidences in favor of each agent opinion, this can also be compehended as how much an agent discounts the evidence it hears from other agents. This is a value between $-1$ and $1$, such that an agent with $-1$ completely reverses any evidence it recieves (if the evidence shows $p$ might be true, the agent treats it as evidence that $p$ is false), and an agent with $1$ completely considers all evidence it recieves.
-- $x_{j,i}$ is the difference of belief between agents $j$ and $i$ ($x_{j,i} = B_j - B_i$).
-- $f$ is the function that captures the cognitive biases we want to consider. At the moment, we try to capture both confirmation-bias and backfire-effect, but we have some conjectures about these funcions in general.
+- $f_{j,i}$ is the function that captures the cognitive biases we want to consider, when agent j tries to influence agent i. We consider biases that depend on the disagreement level (B_j-B_i) only.
 
-# Modules and scripts
+# Modules and scripts (these descriptions might not be updated)
 
 ## belief_update_fs.py
 This module determine the possible $f$ parts of the functions we test.
@@ -47,3 +44,7 @@ This module implements some example of tests and a `simulate` function that runs
 
 ## run_base_tests.py
 This script runs many simulations with changing parameters, to check what happens in each case.
+
+## paper.py and paper2.py
+
+Examples of the paper (probably not all will make it to the paper).
