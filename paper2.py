@@ -373,3 +373,28 @@ plt.close()
 good_bf0_const.plot_history()
 plt.savefig("generated/paper2/hist_good_bf0_const.svg")
 plt.close()
+
+
+
+
+#23 Regions (daltonism-friendly colors: "#D81B60" "#1E88E5" "#FFC107" "#004D40")
+plt.close()
+x = np.linspace(-1,1,1000)
+plt.fill_between(x,-x/abs(x),color="#D81B60") # reactance
+plt.text(0.5,-0.5,"(3)",size='xx-large')
+plt.fill_between(x,x,color="#FFC107") # resistance
+plt.text(0.7,0.3,"(2)",size='xx-large')
+plt.fill_between(x,x/abs(x),x,color="#1E88E5") # susceptibility
+plt.text(0.3,0.7,"(1)",size='xx-large')
+
+plt.plot(np.zeros(1000),x,color='#777777')
+
+#plt.plot(x,x,color="#004D40") # neutral
+plt.plot(x,x,color="k",linestyle='-.') # neutral
+plt.text(-0.5,-0.03,"(4)",size='xx-large')
+#plt.plot(x,np.zeros(1000),color="#777777")# balanced
+plt.plot(x,np.zeros(1000),color="k",linestyle = 'dotted')# balanced
+plt.text(-0.7,-0.67,"(5)",size='xx-large')
+
+
+plt.savefig("generated/paper2/regions.svg")
