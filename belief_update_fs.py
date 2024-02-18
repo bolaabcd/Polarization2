@@ -75,5 +75,5 @@ def sig(x: float, k:float): # also works with numpy array.
         sigx[sigx > 0] = 1
         sigx[sigx <  0] = -1
         sigx[sigx == 0] = 0
-    y = sigx*k
+    y = sigx#*k
     return y

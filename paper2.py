@@ -19,7 +19,7 @@ if not os.path.exists("generated/"):
 if not os.path.exists("generated/paper2/"):
     os.mkdir("generated/paper2/")
 
-def plot_function(f,k):
+def plot_function(f,k, color = '#880000'):
 	plt.close()
 	x = np.linspace(-1,1,1000)
 	y = f(x,k)
@@ -31,7 +31,7 @@ def plot_function(f,k):
 	ax.grid(True, which='both')
 	ax.axhline(y=0, color='k')
 	ax.axvline(x=0, color='k')
-	ax.plot(x,y, color = '#880000')
+	ax.plot(x,y, color = color, linewidth=2)
 
 # Vaccine example
 funcs = np.full((6,6), line_update)
@@ -381,20 +381,315 @@ plt.close()
 plt.close()
 x = np.linspace(-1,1,1000)
 plt.fill_between(x,-x/abs(x),color="#D81B60") # reactance
-plt.text(0.5,-0.5,"(3)",size='xx-large')
+plt.text(0.5,-0.5,"(B)",size='xx-large')
 plt.fill_between(x,x,color="#FFC107") # resistance
-plt.text(0.7,0.3,"(2)",size='xx-large')
+plt.text(0.7,0.3,"(R)",size='xx-large')
 plt.fill_between(x,x/abs(x),x,color="#1E88E5") # susceptibility
-plt.text(0.3,0.7,"(1)",size='xx-large')
+plt.text(0.3,0.7,"(M)",size='xx-large')
 
 plt.plot(np.zeros(1000),x,color='#777777')
 
 #plt.plot(x,x,color="#004D40") # neutral
-plt.plot(x,x,color="k",linestyle='-.') # neutral
-plt.text(-0.5,-0.03,"(4)",size='xx-large')
+#plt.plot(x,x,color="k",linestyle='-.') # neutral
+plt.text(-0.5,-0.03,"(I)",size='xx-large')
 #plt.plot(x,np.zeros(1000),color="#777777")# balanced
 plt.plot(x,np.zeros(1000),color="k",linestyle = 'dotted')# balanced
-plt.text(-0.7,-0.67,"(5)",size='xx-large')
+#plt.text(-0.7,-0.67,"(I)",size='xx-large')
 
 
 plt.savefig("generated/paper2/regions.svg")
+
+
+#23 Functions in three main regions (daltonism-friendly colors: "#D81B60" "#1E88E5" "#FFC107" "#004D40")
+pink = "#D81B60"
+blue = "#1E88E5"
+yellow = "#FFC107"
+green = "#00BF7D"
+green, pink = pink, green
+plt.close()
+x = np.linspace(-1,1,1000)
+plot_function(lambda v,k:v,1, color = pink)
+plt.plot(x,-x**3, linewidth=2, color = yellow)
+plt.plot(x,x*(1-np.abs(x)), linewidth=2, color = blue)
+#plt.plot(x,sig(x,1), color = "#004D40") # linewidth=2
+eps = 0.008
+x1 = np.linspace(-1,-eps,1000)
+x2 = 0
+x3 = np.linspace(eps,1,1000)
+plt.plot(x1,sig(x1,1), linewidth=2, color = green)
+plt.plot(x3,sig(x3,1), linewidth=2, color = green)
+#plt.scatter(x2,sig(x2,1), color = green)
+plt.plot(x2,sig(x2,1),'o', color = green, linewidth=2, markersize=4, markerfacecolor=green, markeredgewidth=1)
+plt.plot(x2,-1,'o', color = green, linewidth=2, markersize=4, markerfacecolor='#FFFFFF', markeredgewidth=1)
+plt.plot(x2, 1,'o', color = green, linewidth=2, markersize=4, markerfacecolor='#FFFFFF', markeredgewidth=1)
+
+plt.savefig("generated/paper2/three_functions.svg")
+
+
+# Distinct vaccine examples (with distinct biases):
+def backf(x,k):
+    return -x**3
+def degr(x,k):
+    return x
+# Vaccine Consensus
+funcs = np.full((6,6), non_norm_quadratic_update)
+funcs[0][1] = sig
+funcs[5][0] = backf
+funcs[1][3] = degr
+funcs[1][0] = degr
+tols = np.full((6,6), 0)
+vacC = vaccine(tols, functions = funcs)
+for i in range(75):
+    vacC.update_beliefs_slow()
+plt.close()
+vacC.plot_history()
+plt.savefig("generated/paper2/vaccineCmany.svg")
+plt.close()
+
+# Vaccine Flip Flop
+funcs = np.full((6,6), non_norm_quadratic_update)
+funcs[2][4] = sig
+funcs[2][3] = backf
+funcs[4][5] = degr
+funcs[5][0] = degr
+tols = np.full((6,6), 0)
+vacFF = vaccine(tols, functions = funcs)
+for i in range(75):
+    vacFF.update_beliefs_slow()
+plt.close()
+vacFF.plot_history()
+plt.savefig("generated/paper2/vaccineFFmany.svg")
+plt.close()
+
+# Vaccine Stable Disagreement
+funcs = np.full((6,6), non_norm_quadratic_update)
+funcs[0][1] = sig
+funcs[5][0] = backf
+funcs[2][4] = backf
+funcs[3][5] = degr
+funcs[4][5] = degr
+tols = np.full((6,6), 0)
+vacSD = vaccine(tols, functions = funcs)
+for i in range(75):
+    vacSD.update_beliefs_slow()
+plt.close()
+vacSD.plot_history()
+plt.savefig("generated/paper2/vaccineSDmany.svg")
+plt.close()
+
+
+# Vaccine with only one bias:
+# Vaccine deGroot-only:
+funcs = np.full((6,6), degr)
+tols = np.full((6,6), 0)
+vacDG = vaccine(tols, functions = funcs)
+for i in range(75):
+    vacDG.update_beliefs_slow()
+plt.close()
+vacDG.plot_history()
+plt.savefig("generated/paper2/vaccineDG.svg")
+plt.close()
+# Vaccine Cbias-only:
+funcs = np.full((6,6), non_norm_quadratic_update)
+tols = np.full((6,6), 0)
+vacCB = vaccine(tols, functions = funcs)
+for i in range(75):
+    vacCB.update_beliefs_slow()
+plt.close()
+vacCB.plot_history()
+plt.savefig("generated/paper2/vaccineCB.svg")
+plt.close()
+# Vaccine fan-only:
+funcs = np.full((6,6), sig)
+tols = np.full((6,6), 0)
+vacF = vaccine(tols, functions = funcs)
+for i in range(75):
+    vacF.update_beliefs_slow()
+plt.close()
+vacF.plot_history()
+plt.savefig("generated/paper2/vaccineF.svg")
+plt.close()
+# Vaccine backf-only:
+funcs = np.full((6,6), backf)
+tols = np.full((6,6), 0)
+vacBF = vaccine(tols, functions = funcs)
+for i in range(7500):
+    vacBF.update_beliefs_slow()
+plt.close()
+vacBF.plot_history()
+plt.savefig("generated/paper2/vaccineBF.svg")
+plt.close()
+
+
+# TEST NO CONSENSUS ON RESILIENCY REGION:
+def discontinuous(x,k):
+    if x <= 1/2 and x >= -1/2:
+        return x
+    elif x > 1/2:
+        return (x-1/2)/5
+    else:
+        return (x+1/2)/5
+f = discontinuous
+Gr = Society_Graph(
+2,#num_agents : int, 
+[0,1],#initial_belief_vector : np.ndarray,
+[[0,1],[1,0]],#initial_influence_matrix : np.ndarray,
+[[f,f],[f,f]],#initial_fs_matrix : np.ndarray,
+[[0,0],[0,0]],#initial_tolerance_matrix : np.ndarray,
+#node_colors_vector : np.ndarray = None,
+#edge_colors_matrix : np.ndarray = None,
+#node_groups_vector : np.ndarray = None,
+#see_constant_agents: bool = True,
+#constant_agents_tol: bool = False,
+#pol_measure : FunctionType = pol_ER_discretized
+)
+
+for i in range(10000):
+    Gr.update_beliefs_slow()
+Gr.plot_history()
+#plt.show()
+plt.savefig("generated/paper2/TEST_consensus_on_resiliency_region.svg")
+plt.close()
+
+
+
+ Remaking examples:
+
+#24 extra functions for puppet-effect
+from math import atan
+k = 1
+def supsuc1(x,k):
+	y = 0
+	if len(np.array(x).shape) == 0:
+		y = atan(x)
+	elif len(x.shape) == 1:
+		y = np.zeros(x.shape)
+		for i in range(x.shape[0]):
+			y[i] = atan(x[i])
+	else:
+		y = np.zeros(x.shape)
+		assert(len(x.shape) == 2)
+		for i in range(x.shape[0]):
+			for j in range(x.shape[1]):
+				y[i][j] = atan(x[i][j])
+	return y/atan(1)
+def supsuc2(x,k):
+	return np.nan_to_num(x/np.sqrt(abs(x)))
+func = supsuc1
+plot_function(func,k)
+plt.savefig("generated/paper2/func_extra_supsuc1.svg")
+plt.close()
+
+supsuc = simple_clique_uniform(15,func,0,1,k,1)
+supsuc.quick_update(30)
+plt.close()
+supsuc.plot_history()
+plt.savefig("generated/paper2/hist_extra_supsuc1.svg")
+plt.close()
+
+
+func = supsuc2
+plot_function(func,k)
+plt.savefig("generated/paper2/func_extra_supsuc2.svg")
+plt.close()
+
+supsuc = simple_clique_uniform(15,func,0,1,k,1)
+supsuc.quick_update(30)
+plt.close()
+supsuc.plot_history()
+plt.savefig("generated/paper2/hist_extra_supsuc2.svg")
+plt.close()
+
+
+
+#25 extra functions for resilliency
+from math import sin
+k = 1
+def cbias1(x,k):
+	y = 0
+	if len(np.array(x).shape) == 0:
+		y = sin(x)
+	elif len(x.shape) == 1:
+		y = np.zeros(x.shape)
+		for i in range(x.shape[0]):
+			y[i] = sin(x[i])
+	else:
+		y = np.zeros(x.shape)
+		assert(len(x.shape) == 2)
+		for i in range(x.shape[0]):
+			for j in range(x.shape[1]):
+				y[i][j] = sin(x[i][j])
+	return y
+def cbias2(x,k):
+	return x**3
+func = cbias1
+plot_function(func,k)
+plt.savefig("generated/paper2/func_extra_cbias1.svg")
+plt.close()
+
+cbias = simple_clique_uniform(15,func,0,1,k,1)
+cbias.quick_update(15)
+plt.close()
+cbias.plot_history()
+plt.savefig("generated/paper2/hist_extra_cbias1.svg")
+plt.close()
+
+
+func = cbias2
+plot_function(func,k)
+plt.savefig("generated/paper2/func_extra_cbias2.svg")
+plt.close()
+
+cbias = simple_clique_uniform(15,func,0,1,k,1)
+cbias.quick_update(10000)
+plt.close()
+cbias.plot_history()
+plt.savefig("generated/paper2/hist_extra_cbias2.svg")
+plt.close()
+
+
+
+#25 extra functions for reactance
+from math import sin
+k = 1
+def reac1(x,k):
+	y = 0
+	if len(np.array(x).shape) == 0:
+		y = -sin(x)
+	elif len(x.shape) == 1:
+		y = np.zeros(x.shape)
+		for i in range(x.shape[0]):
+			y[i] = -sin(x[i])
+	else:
+		y = np.zeros(x.shape)
+		assert(len(x.shape) == 2)
+		for i in range(x.shape[0]):
+			for j in range(x.shape[1]):
+				y[i][j] = -sin(x[i][j])
+	return y
+def reac2(x,k):
+	return -x**3
+func = reac1
+plot_function(func,k)
+plt.savefig("generated/paper2/func_extra_reac1.svg")
+plt.close()
+
+reac = simple_clique_uniform(15,func,0,1,k,1)
+reac.quick_update(30)
+plt.close()
+reac.plot_history()
+plt.savefig("generated/paper2/hist_extra_reac1.svg")
+plt.close()
+
+
+func = reac2
+plot_function(func,k)
+plt.savefig("generated/paper2/func_extra_reac2.svg")
+plt.close()
+
+reac = simple_clique_uniform(15,func,0,1,k,1)
+reac.quick_update(30)
+plt.close()
+reac.plot_history()
+plt.savefig("generated/paper2/hist_extra_reac2.svg")
+plt.close()
